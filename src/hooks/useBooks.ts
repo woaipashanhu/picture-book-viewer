@@ -6,7 +6,7 @@ export function useBooks() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/books.json')
+    fetch('./books.json')
       .then(res => res.json())
       .then(data => {
         setBooks(data);
