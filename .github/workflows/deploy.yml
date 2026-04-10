@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Copy books to public
+        run: cp -r books public/
+
       - name: Generate books.json
         run: node generate-books.js
 
