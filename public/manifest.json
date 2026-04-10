@@ -1,0 +1,22 @@
+{
+  "name": "刘费曼的绘本",
+  "short_name": "绘本",
+  "description": "A warm and cozy picture book viewer",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FDF6EC",
+  "theme_color": "#FDF6EC",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
