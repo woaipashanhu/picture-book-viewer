@@ -32,5 +32,48 @@
       "./books/03-小花园的秘密/page-01.jpg",
       "./books/03-小花园的秘密/page-02.jpg"
     ]
+  },
+  {
+    "id": "04-灰大门到橘子洲",
+    "title": "从灰大门到橘子洲",
+    "description": "一个小男孩和家人从北京胡同出发，坐高铁去北京和长沙旅行的故事。途中有颐和园、天安门广场、橘子洲头，还有剪扇子的趣事。",
+    "date": "2026-04-10",
+    "cover": "./books/04-灰大门到橘子洲/page-01.jpg",
+    "pages": [
+      "./books/04-灰大门到橘子洲/page-01.jpg",
+      "./books/04-灰大门到橘子洲/page-01.png",
+      "./books/04-灰大门到橘子洲/page-02.jpg",
+      "./books/04-灰大门到橘子洲/page-02.png",
+      "./books/04-灰大门到橘子洲/page-03.jpg",
+      "./books/04-灰大门到橘子洲/page-03.png",
+      "./books/04-灰大门到橘子洲/page-04.jpg",
+      "./books/04-灰大门到橘子洲/page-04.png",
+      "./books/04-灰大门到橘子洲/page-05.jpg",
+      "./books/04-灰大门到橘子洲/page-05.png",
+      "./books/04-灰大门到橘子洲/page-06.jpg",
+      "./books/04-灰大门到橘子洲/page-06.png",
+      "./books/04-灰大门到橘子洲/page-07.jpg",
+      "./books/04-灰大门到橘子洲/page-07.png",
+      "./books/04-灰大门到橘子洲/page-08.jpg",
+      "./books/04-灰大门到橘子洲/page-08.png",
+      "./books/04-灰大门到橘子洲/page-09.jpg",
+      "./books/04-灰大门到橘子洲/page-09.png",
+      "./books/04-灰大门到橘子洲/page-10.jpg",
+      "./books/04-灰大门到橘子洲/page-10.png",
+      "./books/04-灰大门到橘子洲/page-11.jpg",
+      "./books/04-灰大门到橘子洲/page-11.png",
+      "./books/04-灰大门到橘子洲/page-12.jpg",
+      "./books/04-灰大门到橘子洲/page-12.png",
+      "./books/04-灰大门到橘子洲/page-13.jpg",
+      "./books/04-灰大门到橘子洲/page-13.png",
+      "./books/04-灰大门到橘子洲/page-14.jpg",
+      "./books/04-灰大门到橘子洲/page-14.png",
+      "./books/04-灰大门到橘子洲/page-15.jpg",
+      "./books/04-灰大门到橘子洲/page-15.png",
+      "./books/04-灰大门到橘子洲/page-16.jpg",
+      "./books/04-灰大门到橘子洲/page-16.png",
+      "./books/04-灰大门到橘子洲/page-17.jpg",
+      "./books/04-灰大门到橘子洲/page-17.png"
+    ]
   }
 ]
