@@ -65,36 +65,6 @@ export default function BookViewer({
     },
   }, !isZoomedRef.current);
 
-  // Distinguish click vs swipe for toggling info bar
-  const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    mouseDownPosRef.current = { x: e.clientX, y: e.clientY };
-    swipeHandlers.onMouseDown(e);
-  }, [swipeHandlers]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    swipeHandlers.onMouseMove(e);
-  }, [swipeHandlers]);
-
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
-    // If it was a click (not a swipe), toggle info
-    if (mouseDownPosRef.current && !isZoomedRef.current) {
-      const dx = Math.abs(e.clientX - mouseDownPosRef.current.x);
-      const dy = Math.abs(e.clientY - mouseDownPosRef.current.y);
-      if (dx < 10 && dy < 10) {
-        setShowInfo(prev => !prev);
-      }
-    }
-    mouseDownPosRef.current = null;
-    swipeHandlers.onMouseUp(e);
-  }, [swipeHandlers]);
-
-  const handleClick = useCallback((e: React.MouseEvent) => {
-    // Prevent click from firing after swipe - let mouseUp handle it
-    e.preventDefault();
-  }, []);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       switch (e.key) {
@@ -128,11 +98,7 @@ export default function BookViewer({
         if (!isZoomedRef.current) swipeHandlers.onTouchEnd(e);
       }}
       style={{ touchAction: 'none', userSelect: 'none' }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onClick={handleClick}
+      onClick={() => !isZoomedRef.current && setShowInfo(prev => !prev)}
     >
       {/* Top bar */}
       <div
@@ -154,15 +120,43 @@ export default function BookViewer({
       </div>
 
       {/* Image with pinch zoom */}
-      <div className="flex-1 p-2">
+      <div className="flex-1 p-2 relative">
         <PinchZoom onZoomChange={handleZoomChange}>
           <img
             src={currentImage}
             alt={`${book.title} - Page ${pageIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-lg select-none pointer-events-none"
+            className="max-w-full max-h-full object-contain rounded-lg select-none"
             draggable={false}
           />
         </PinchZoom>
+
+        {/* Left arrow */}
+        {pageIndex > 0 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
+            className="absolute left-1 top-1/2 -translate-y-1/2 w-12 h-20 flex items-center justify-center
+                       bg-black/20 hover:bg-black/40 active:bg-black/50 rounded-xl
+                       transition-all duration-200 backdrop-blur-sm cursor-pointer z-20"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+        )}
+
+        {/* Right arrow */}
+        {pageIndex < totalPages - 1 && (
+          <button
+            onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
+            className="absolute right-1 top-1/2 -translate-y-1/2 w-12 h-20 flex items-center justify-center
+                       bg-black/20 hover:bg-black/40 active:bg-black/50 rounded-xl
+                       transition-all duration-200 backdrop-blur-sm cursor-pointer z-20"
+          >
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Bottom bar */}
