@@ -254,7 +254,7 @@ export default function BookViewer({
       </div>
 
       {/* Left side controls */}
-      <div className="fixed left-3 z-40 flex flex-col items-center" style="margin-top: calc(50vh - 55px)">
+      <div className="fixed left-3 z-40 flex flex-col items-center" style={{ marginTop: "calc(50vh - 55px)" }}>
         {/* Left arrow (prev page) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
