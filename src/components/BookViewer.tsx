@@ -63,7 +63,6 @@ export default function BookViewer({
       autoPlayTimerRef.current = setInterval(() => {
         setPageIndex(prev => {
           if (prev >= totalPages - 1) {
-            // Reached last page, stay here and stop
             setAutoPlay(false);
             return prev;
           }
@@ -138,6 +137,10 @@ export default function BookViewer({
   const isFirstPage = pageIndex === 0;
   const isLastPage = pageIndex === totalPages - 1;
 
+  // Shared style for semi-transparent buttons
+  const btnBase = 'flex items-center justify-center rounded-xl transition-all duration-200';
+  const btnBg = { background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' };
+
   return (
     <div
       ref={containerRef}
@@ -170,13 +173,12 @@ export default function BookViewer({
         </button>
       </div>
 
-      {/* Right side: Auto play (above right arrow), Right arrow, Prev/Next book (below right arrow) */}
-      <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center gap-2">
+      {/* Right side controls */}
+      <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
         {/* Auto play button */}
         <button
           onClick={(e) => { e.stopPropagation(); toggleAutoPlay(); }}
-          className={`w-12 h-12 md:w-14 md:h-12 flex items-center justify-center rounded-xl
-                     transition-all duration-200 cursor-pointer
+          className={`w-12 h-12 md:w-14 md:h-12 ${btnBase} cursor-pointer
                      ${autoPlay
                        ? 'bg-warm-orange/70 hover:bg-warm-orange/80 active:bg-warm-orange/90'
                        : 'hover:opacity-100 active:opacity-80'
@@ -184,29 +186,29 @@ export default function BookViewer({
           style={{ background: autoPlay ? undefined : 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
         >
           {autoPlay ? (
-            // Pause icon
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="6" y="4" width="4" height="16" />
               <rect x="14" y="4" width="4" height="16" />
             </svg>
           ) : (
-            // Play icon
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
           )}
         </button>
 
+        {/* Spacer */}
+        <div className="h-3" />
+
         {/* Right arrow (next page) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
-          className={`w-12 h-16 md:w-14 md:h-24 flex items-center justify-center rounded-xl
-                     transition-all duration-200
+          className={`w-12 h-16 md:w-14 md:h-24 ${btnBase}
                      ${isLastPage
                        ? 'opacity-30 cursor-not-allowed'
                        : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
                      }`}
-          style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+          style={btnBg}
           disabled={isLastPage}
         >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
@@ -214,42 +216,45 @@ export default function BookViewer({
           </svg>
         </button>
 
-        {/* Next book */}
+        {/* Spacer before book nav */}
+        <div className="h-4" />
+
+        {/* Next book - down arrow */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
-          className={`w-12 h-10 md:w-14 md:h-10 flex items-center justify-center rounded-xl
-                     transition-all duration-200
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
                      ${isLastBook
                        ? 'opacity-30 cursor-not-allowed'
                        : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
                      }`}
-          style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+          style={btnBg}
           disabled={isLastBook}
         >
           <div className="flex flex-col items-center leading-none">
             <span className="text-white/80 text-[10px] font-body whitespace-nowrap">下一本</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
-              <path d="M9 18l6-6-6-6" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
+              <path d="M12 5v14" />
+              <path d="M19 12l-7 7-7-7" />
             </svg>
           </div>
         </button>
 
-        {/* Prev book */}
+        {/* Prev book - up arrow */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
-          className={`w-12 h-10 md:w-14 md:h-10 flex items-center justify-center rounded-xl
-                     transition-all duration-200
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
                      ${isFirstBook
                        ? 'opacity-30 cursor-not-allowed'
                        : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
                      }`}
-          style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+          style={btnBg}
           disabled={isFirstBook}
         >
           <div className="flex flex-col items-center leading-none">
             <span className="text-white/80 text-[10px] font-body whitespace-nowrap">上一本</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
-              <path d="M15 18l-6-6 6-6" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
+              <path d="M12 19V5" />
+              <path d="M5 12l7-7 7 7" />
             </svg>
           </div>
         </button>
@@ -259,12 +264,12 @@ export default function BookViewer({
       <button
         onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
         className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
-                    flex items-center justify-center rounded-xl transition-all duration-200
+                    ${btnBase}
                     ${isFirstPage
                       ? 'opacity-30 cursor-not-allowed'
                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
                     }`}
-        style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+        style={btnBg}
         disabled={isFirstPage}
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
