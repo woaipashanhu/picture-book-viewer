@@ -28,7 +28,6 @@ export default function BookViewer({
   const [transitionKey, setTransitionKey] = useState(0);
   const [animClass, setAnimClass] = useState('');
   const [autoPlay, setAutoPlay] = useState(false);
-  const [checking, setChecking] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
   const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -104,29 +103,6 @@ export default function BookViewer({
     setAutoPlay(prev => !prev);
   }, []);
 
-  const handleUpdate = useCallback(async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setChecking(true);
-    try {
-      const registration = await navigator.serviceWorker.getRegistration();
-      if (registration) {
-        if (registration.waiting) {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          return;
-        }
-        await registration.update();
-        setTimeout(() => {
-          setChecking(false);
-          window.location.reload();
-        }, 1500);
-      } else {
-        window.location.reload();
-      }
-    } catch {
-      window.location.reload();
-    }
-  }, []);
-
   const swipeHandlers = useSwipe({
     onSwipeLeft: goToNextPage,
     onSwipeRight: goToPrevPage,
@@ -179,11 +155,11 @@ export default function BookViewer({
       }}
       style={{ touchAction: 'none', userSelect: 'none' }}
     >
-      {/* Top-left: Home button */}
-      <div className="absolute top-0 left-0 z-40">
+      {/* Top-right: Home button (moved from top-left) */}
+      <div className="absolute top-0 right-0 z-40">
         <button
           onClick={(e) => { e.stopPropagation(); onBackToGrid(); }}
-          className="mt-10 ml-4 flex items-center gap-2 px-3 py-2 rounded-lg
+          className="mt-10 mr-4 flex items-center gap-2 px-3 py-2 rounded-lg
                      bg-black/20 hover:bg-black/40 active:bg-black/50
                      backdrop-blur-sm transition-all duration-200 cursor-pointer"
         >
@@ -195,34 +171,9 @@ export default function BookViewer({
         </button>
       </div>
 
-      {/* Top-right: Update button */}
-      <div className="absolute top-0 right-0 z-50">
-        <button
-          onClick={handleUpdate}
-          disabled={checking}
-          className="mt-10 mr-4 w-14 h-14 rounded-full
-                     bg-white/15 backdrop-blur-md
-                     border border-white/20
-                     flex flex-col items-center justify-center gap-0.5
-                     active:bg-white/30 transition-all duration-200 cursor-pointer"
-        >
-          {checking ? (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
-              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
-          )}
-          <span className="text-white text-[9px] font-bold leading-none">{checking ? '中' : '刷新'}</span>
-        </button>
-      </div>
-
-      {/* Right side controls */}
-      <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
+      {/* Right side controls - shifted right with right-3 */}
+      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
+        {/* Auto play button */}
         <button
           onClick={(e) => { e.stopPropagation(); toggleAutoPlay(); }}
           className={`w-12 h-12 md:w-14 md:h-12 ${btnBase} cursor-pointer
@@ -246,6 +197,7 @@ export default function BookViewer({
 
         <div className="h-3" />
 
+        {/* Right arrow (next page) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
           className={`w-12 h-16 md:w-14 md:h-24 ${btnBase}
@@ -261,22 +213,9 @@ export default function BookViewer({
           </svg>
         </button>
 
-        <div className="h-4" />
+        <div className="h-8" />
 
-        <button
-          onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
-          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
-          style={btnBg}
-        >
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-white/80 text-[10px] font-body whitespace-nowrap">下一本</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
-              <path d="M12 5v14" />
-              <path d="M19 12l-7 7-7-7" />
-            </svg>
-          </div>
-        </button>
-
+        {/* Prev book - on top (up arrow) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
@@ -290,12 +229,29 @@ export default function BookViewer({
             </svg>
           </div>
         </button>
+
+        <div className="h-8" />
+
+        {/* Next book - on bottom (down arrow) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
+          style={btnBg}
+        >
+          <div className="flex flex-col items-center leading-none">
+            <span className="text-white/80 text-[10px] font-body whitespace-nowrap">下一本</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
+              <path d="M12 5v14" />
+              <path d="M19 12l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
       </div>
 
-      {/* Left arrow */}
+      {/* Left arrow - shifted right with left-3 */}
       <button
         onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
-        className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
+        className={`fixed left-3 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
                     ${btnBase}
                     ${isFirstPage
                       ? 'opacity-30 cursor-not-allowed'
@@ -309,8 +265,8 @@ export default function BookViewer({
         </svg>
       </button>
 
-      {/* Image area */}
-      <div className="flex-1 px-16 py-2 flex items-center justify-center">
+      {/* Image area - reduced horizontal padding to avoid buttons covering image */}
+      <div className="flex-1 px-20 py-2 flex items-center justify-center">
         <PinchZoom onZoomChange={handleZoomChange}>
           <img
             src={currentImage}
