@@ -22,6 +22,7 @@ export default function BookViewer({
   const [transitionKey, setTransitionKey] = useState(0);
   const [animClass, setAnimClass] = useState('');
   const [showInfo, setShowInfo] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
 
   const totalPages = book.pages.length;
@@ -51,15 +52,9 @@ export default function BookViewer({
     setPageIndex(prev => (prev < totalPages - 1 ? prev + 1 : prev));
   }, []);
 
-  const swipeRef = useSwipe({
-    onSwipeLeft: () => {
-      if (isZoomedRef.current) return;
-      goToNextPage();
-    },
-    onSwipeRight: () => {
-      if (isZoomedRef.current) return;
-      goToPrevPage();
-    },
+  const swipeHandlers = useSwipe({
+    onSwipeLeft: goToNextPage,
+    onSwipeRight: goToPrevPage,
     onSwipeUp: () => {
       if (isZoomedRef.current) return;
       if (pageIndex === 0) onCloseUp();
@@ -78,6 +73,10 @@ export default function BookViewer({
     mouseStartRef.current = { x: e.clientX, y: e.clientY, startTime: Date.now() };
   }, []);
 
+  const handleMouseMove = useCallback((_e: React.MouseEvent) => {
+    // Just track - nothing to do during move
+  }, []);
+
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     if (!mouseStartRef.current || isZoomedRef.current) return;
     const { x, y, startTime } = mouseStartRef.current;
@@ -86,6 +85,7 @@ export default function BookViewer({
     const elapsed = Date.now() - startTime;
     mouseStartRef.current = null;
 
+    // Ignore if it took too long (was probably a click/drag select)
     if (elapsed > 500) return;
 
     const absX = Math.abs(deltaX);
@@ -93,9 +93,11 @@ export default function BookViewer({
     const threshold = 50;
 
     if (absX > absY && absX > threshold) {
+      // Horizontal swipe
       if (deltaX < 0) goToNextPage();
       else goToPrevPage();
     } else if (absY > absX && absY > threshold) {
+      // Vertical swipe - only at boundaries
       if (deltaY < 0 && pageIndex === 0) onCloseUp();
       else if (deltaY > 0 && pageIndex === totalPages - 1) onCloseDown();
     }
@@ -121,11 +123,21 @@ export default function BookViewer({
 
   return (
     <div
-      ref={swipeRef}
+      ref={containerRef}
       className={`fixed inset-0 z-50 bg-bark flex flex-col overflow-hidden ${animClass}`}
       key={`${book.id}-${transitionKey}`}
+      onTouchStart={(e) => {
+        if (!isZoomedRef.current) swipeHandlers.onTouchStart(e);
+      }}
+      onTouchMove={(e) => {
+        if (!isZoomedRef.current) swipeHandlers.onTouchMove(e);
+      }}
+      onTouchEnd={(e) => {
+        if (!isZoomedRef.current) swipeHandlers.onTouchEnd(e);
+      }}
       style={{ touchAction: 'none' }}
       onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
     >

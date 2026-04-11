@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 interface SwipeHandlers {
   onSwipeLeft?: () => void;
@@ -7,73 +7,111 @@ interface SwipeHandlers {
   onSwipeDown?: () => void;
 }
 
-interface SwipeState {
-  startX: number;
-  startY: number;
-  isSwiping: boolean;
-  direction: 'horizontal' | 'vertical' | null;
-}
+const THRESHOLD = 40;
 
-const THRESHOLD = 50;
-const DIRECTION_LOCK_THRESHOLD = 15;
-
+/**
+ * iOS PWA-compatible swipe hook.
+ * Uses native addEventListener with { passive: false } to ensure
+ * preventDefault() works, preventing Safari from hijacking touches.
+ */
 export function useSwipe(handlers: SwipeHandlers) {
-  const stateRef = useRef<SwipeState>({
+  const handlersRef = useRef(handlers);
+  handlersRef.current = handlers;
+
+  const stateRef = useRef({
     startX: 0,
     startY: 0,
+    startTime: 0,
     isSwiping: false,
-    direction: null,
+    direction: null as 'horizontal' | 'vertical' | null,
+    isMultiTouch: false,
   });
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    stateRef.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      isSwiping: true,
-      direction: null,
-    };
-  }, []);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!stateRef.current.isSwiping || stateRef.current.direction) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - stateRef.current.startX;
-    const deltaY = touch.clientY - stateRef.current.startY;
-
-    if (Math.abs(deltaX) > DIRECTION_LOCK_THRESHOLD || Math.abs(deltaY) > DIRECTION_LOCK_THRESHOLD) {
-      stateRef.current.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+  const onTouchStart = useCallback((e: TouchEvent) => {
+    // Ignore multi-touch (reserved for pinch-zoom)
+    if (e.touches.length > 1) {
+      stateRef.current.isMultiTouch = true;
+      stateRef.current.isSwiping = false;
+      return;
     }
-  }, []);
-
-  const onTouchEnd = useCallback((_e?: React.TouchEvent) => {
-    const { startX, startY, direction, isSwiping } = stateRef.current;
-    if (!isSwiping) return;
-
-    // Get the actual end position from the event if available
-    const currentTouch = _e?.changedTouches?.[0];
-    const endX = currentTouch?.clientX ?? startX;
-    const endY = currentTouch?.clientY ?? startY;
-
-    const deltaX = endX - startX;
-    const deltaY = endY - startY;
-
-    // If direction was determined, use it; otherwise check both
-    if (direction === 'horizontal' || (!direction && Math.abs(deltaX) > Math.abs(deltaY))) {
-      if (Math.abs(deltaX) > THRESHOLD) {
-        if (deltaX < 0) handlers.onSwipeLeft?.();
-        else handlers.onSwipeRight?.();
-      }
-    } else if (direction === 'vertical' || (!direction && Math.abs(deltaY) > Math.abs(deltaX))) {
-      if (Math.abs(deltaY) > THRESHOLD) {
-        if (deltaY < 0) handlers.onSwipeUp?.();
-        else handlers.onSwipeDown?.();
-      }
-    }
-
-    stateRef.current.isSwiping = false;
+    stateRef.current.isMultiTouch = false;
+    stateRef.current.isSwiping = true;
     stateRef.current.direction = null;
-  }, [handlers]);
+    stateRef.current.startX = e.touches[0].clientX;
+    stateRef.current.startY = e.touches[0].clientY;
+    stateRef.current.startTime = Date.now();
+  }, []);
 
-  return { onTouchStart, onTouchMove, onTouchEnd };
+  const onTouchMove = useCallback((e: TouchEvent) => {
+    const state = stateRef.current;
+
+    if (!state.isSwiping || state.isMultiTouch) return;
+
+    const deltaX = e.touches[0].clientX - state.startX;
+    const deltaY = e.touches[0].clientY - state.startY;
+
+    // Lock direction after a small movement threshold
+    if (!state.direction) {
+      if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
+        state.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+      } else {
+        return;
+      }
+    }
+
+    // Prevent browser default (scroll, back, etc.)
+    e.preventDefault();
+  }, []);
+
+  const onTouchEnd = useCallback((e: TouchEvent) => {
+    const state = stateRef.current;
+
+    if (!state.isSwiping || state.isMultiTouch) {
+      state.isSwiping = false;
+      state.isMultiTouch = false;
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - state.startX;
+    const deltaY = touch.clientY - state.startY;
+    const elapsed = Date.now() - state.startTime;
+
+    state.isSwiping = false;
+    state.direction = null;
+
+    // Ignore slow drags (not a swipe)
+    if (elapsed > 800) return;
+
+    // Check both horizontal and vertical independently
+    if (Math.abs(deltaX) > THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 0.5) {
+      if (deltaX < 0) handlersRef.current.onSwipeLeft?.();
+      else handlersRef.current.onSwipeRight?.();
+    }
+
+    if (Math.abs(deltaY) > THRESHOLD && Math.abs(deltaY) > Math.abs(deltaX) * 0.5) {
+      if (deltaY < 0) handlersRef.current.onSwipeUp?.();
+      else handlersRef.current.onSwipeDown?.();
+    }
+  }, []);
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    // Must use { passive: false } so preventDefault() works in iOS PWA
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [onTouchStart, onTouchMove, onTouchEnd]);
+
+  return ref;
 }
