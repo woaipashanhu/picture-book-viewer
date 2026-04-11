@@ -19,7 +19,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,jpg,jpeg,svg,woff2}'],
         runtimeCaching: [
           {
-            urlPattern: /\/books\/.*\.(jpg|jpeg|png|gif|webp|svg)$/i,
+            urlPattern: /\.(jpg|jpeg|png|gif|webp|svg|webp)(\?.*)?$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'book-images',
