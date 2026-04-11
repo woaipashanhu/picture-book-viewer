@@ -199,30 +199,30 @@ export default function BookViewer({
       <div className="absolute top-0 right-0 z-50">
         <button
           onClick={handleUpdate}
-          className="mt-10 mr-4 flex items-center gap-1.5 px-3 py-2 rounded-lg
-                     bg-black/20 hover:bg-black/40 active:bg-black/50
-                     backdrop-blur-sm transition-all duration-200 cursor-pointer"
-          title="检查更新"
+          disabled={checking}
+          className="mt-10 mr-4 w-14 h-14 rounded-full
+                     bg-white/15 backdrop-blur-md
+                     border border-white/20
+                     flex flex-col items-center justify-center gap-0.5
+                     active:bg-white/30 transition-all duration-200 cursor-pointer"
         >
           {checking ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
               <path d="M21 12a9 9 0 1 1-6.219-8.56" />
             </svg>
           ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
-              <path d="M21.5 2v6h-6" />
-              <path d="M2.5 22v-6h6" />
-              <path d="M2.11 13.51A10 10 0 0 1 20.39 6.11L21.5 8" />
-              <path d="M21.89 10.49A10 10 0 0 1 3.61 17.89L2.5 16" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="23 4 23 10 17 10" />
+              <polyline points="1 20 1 14 7 14" />
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
             </svg>
           )}
-          <span className="text-white/80 text-xs font-body">{checking ? '检查中' : '更新'}</span>
+          <span className="text-white text-[9px] font-bold leading-none">{checking ? '中' : '刷新'}</span>
         </button>
       </div>
 
       {/* Right side controls */}
       <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
-        {/* Auto play button */}
         <button
           onClick={(e) => { e.stopPropagation(); toggleAutoPlay(); }}
           className={`w-12 h-12 md:w-14 md:h-12 ${btnBase} cursor-pointer
@@ -246,7 +246,6 @@ export default function BookViewer({
 
         <div className="h-3" />
 
-        {/* Right arrow (next page) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
           className={`w-12 h-16 md:w-14 md:h-24 ${btnBase}
@@ -264,7 +263,6 @@ export default function BookViewer({
 
         <div className="h-4" />
 
-        {/* Next book */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
@@ -279,7 +277,6 @@ export default function BookViewer({
           </div>
         </button>
 
-        {/* Prev book */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
@@ -295,7 +292,7 @@ export default function BookViewer({
         </button>
       </div>
 
-      {/* Left arrow (prev page) */}
+      {/* Left arrow */}
       <button
         onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
         className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
