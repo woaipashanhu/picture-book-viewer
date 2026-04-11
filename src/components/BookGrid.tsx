@@ -21,7 +21,7 @@ export default function BookGrid({ books, onSelect }: BookGridProps) {
         </div>
       </header>
 
-      {/* Grid */}
+      {/* Grid - responsive columns with horizontal card layout */}
       <div className="flex-1 overflow-y-auto book-grid-scroll px-4 pb-8">
         {books.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
@@ -31,7 +31,7 @@ export default function BookGrid({ books, onSelect }: BookGridProps) {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3">
             {books.map((book, index) => (
               <BookCard
                 key={book.id}

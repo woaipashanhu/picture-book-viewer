@@ -12,7 +12,7 @@ export default function BookCard({ book, onClick }: BookCardProps) {
       className="w-full text-left focus:outline-none active:scale-[0.97] transition-transform duration-200"
     >
       <div className="bg-white rounded-card shadow-sm overflow-hidden border border-warm-border">
-        <div className="aspect-[3/4] overflow-hidden">
+        <div className="aspect-[16/9] overflow-hidden">
           <img
             src={book.cover}
             alt={book.title}
