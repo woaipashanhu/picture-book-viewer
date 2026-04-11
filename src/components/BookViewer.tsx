@@ -73,7 +73,7 @@ export default function BookViewer({
     mouseStartRef.current = { x: e.clientX, y: e.clientY, startTime: Date.now() };
   }, []);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+  const handleMouseMove = useCallback((_e: React.MouseEvent) => {
     // Just track - nothing to do during move
   }, []);
 
