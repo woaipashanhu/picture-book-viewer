@@ -6,8 +6,7 @@ import type { Book } from '../types/book';
 interface BookViewerProps {
   book: Book;
   bookIndex: number;
-  isFirstBook: boolean;
-  isLastBook: boolean;
+  totalBooks: number;
   direction: 'up' | 'down' | 'none';
   onCloseUp: () => void;
   onCloseDown: () => void;
@@ -18,8 +17,7 @@ interface BookViewerProps {
 export default function BookViewer({
   book,
   bookIndex,
-  isFirstBook,
-  isLastBook,
+  totalBooks,
   direction,
   onCloseUp,
   onCloseDown,
@@ -36,7 +34,6 @@ export default function BookViewer({
 
   const totalPages = book.pages.length;
 
-  // Reset when book changes
   useEffect(() => {
     setTransitionKey(prev => prev + 1);
     setPageIndex(0);
@@ -52,7 +49,6 @@ export default function BookViewer({
     }
   }, [book.id, direction]);
 
-  // Auto play logic
   useEffect(() => {
     if (autoPlayTimerRef.current) {
       clearInterval(autoPlayTimerRef.current);
@@ -89,16 +85,16 @@ export default function BookViewer({
   }, [pageIndex, totalPages]);
 
   const goToPrevBook = useCallback(() => {
-    if (isFirstBook) return;
     setAutoPlay(false);
-    onGoToBook(bookIndex - 1);
-  }, [bookIndex, isFirstBook, onGoToBook]);
+    const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
+    onGoToBook(newIndex, 'up');
+  }, [bookIndex, totalBooks, onGoToBook]);
 
   const goToNextBook = useCallback(() => {
-    if (isLastBook) return;
     setAutoPlay(false);
-    onGoToBook(bookIndex + 1);
-  }, [bookIndex, isLastBook, onGoToBook]);
+    const newIndex = bookIndex === totalBooks - 1 ? 0 : bookIndex + 1;
+    onGoToBook(newIndex, 'down');
+  }, [bookIndex, totalBooks, onGoToBook]);
 
   const toggleAutoPlay = useCallback(() => {
     setAutoPlay(prev => !prev);
@@ -137,7 +133,6 @@ export default function BookViewer({
   const isFirstPage = pageIndex === 0;
   const isLastPage = pageIndex === totalPages - 1;
 
-  // Shared style for semi-transparent buttons
   const btnBase = 'flex items-center justify-center rounded-xl transition-all duration-200';
   const btnBg = { background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' };
 
@@ -219,16 +214,12 @@ export default function BookViewer({
         {/* Spacer before book nav */}
         <div className="h-4" />
 
-        {/* Next book - down arrow */}
+        {/* Next book - down arrow (always enabled, wraps around) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
-                     ${isLastBook
-                       ? 'opacity-30 cursor-not-allowed'
-                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
-                     }`}
+                     opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
           style={btnBg}
-          disabled={isLastBook}
         >
           <div className="flex flex-col items-center leading-none">
             <span className="text-white/80 text-[10px] font-body whitespace-nowrap">下一本</span>
@@ -239,16 +230,12 @@ export default function BookViewer({
           </div>
         </button>
 
-        {/* Prev book - up arrow */}
+        {/* Prev book - up arrow (always enabled, wraps around) */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
-                     ${isFirstBook
-                       ? 'opacity-30 cursor-not-allowed'
-                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
-                     }`}
+                     opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
           style={btnBg}
-          disabled={isFirstBook}
         >
           <div className="flex flex-col items-center leading-none">
             <span className="text-white/80 text-[10px] font-body whitespace-nowrap">上一本</span>

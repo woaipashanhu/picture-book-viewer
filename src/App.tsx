@@ -8,8 +8,10 @@ type ViewState =
   | { screen: 'viewer'; bookIndex: number; direction: 'up' | 'down' | 'none' };
 
 export default function App() {
-  const { books, loading, getPrevBook, getNextBook } = useBooks();
+  const { books, loading } = useBooks();
   const [viewState, setViewState] = useState<ViewState>({ screen: 'grid' });
+
+  const totalBooks = books.length;
 
   const openBook = useCallback((index: number) => {
     setViewState({ screen: 'viewer', bookIndex: index, direction: 'none' });
@@ -22,12 +24,15 @@ export default function App() {
   const closeToGrid = useCallback((direction: 'up' | 'down') => {
     setViewState(prev => {
       if (prev.screen !== 'viewer') return prev;
-      const newIndex = direction === 'up'
-        ? getPrevBook(prev.bookIndex)
-        : getNextBook(prev.bookIndex);
+      let newIndex: number;
+      if (direction === 'up') {
+        newIndex = prev.bookIndex === 0 ? totalBooks - 1 : prev.bookIndex - 1;
+      } else {
+        newIndex = prev.bookIndex === totalBooks - 1 ? 0 : prev.bookIndex + 1;
+      }
       return { screen: 'viewer', bookIndex: newIndex, direction };
     });
-  }, [getPrevBook, getNextBook]);
+  }, [totalBooks]);
 
   const backToGrid = useCallback(() => {
     setViewState({ screen: 'grid' });
@@ -49,16 +54,12 @@ export default function App() {
   }
 
   const book = books[viewState.bookIndex];
-  const totalBooks = books.length;
-  const isFirstBook = viewState.bookIndex === 0;
-  const isLastBook = viewState.bookIndex === totalBooks - 1;
 
   return (
     <BookViewer
       book={book}
       bookIndex={viewState.bookIndex}
-      isFirstBook={isFirstBook}
-      isLastBook={isLastBook}
+      totalBooks={totalBooks}
       direction={viewState.direction}
       onCloseUp={() => closeToGrid('up')}
       onCloseDown={() => closeToGrid('down')}
