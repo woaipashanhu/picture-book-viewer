@@ -24,7 +24,6 @@ export default function BookViewer({
   const [showInfo, setShowInfo] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
-  const startYRef = useRef(0);
 
   const totalPages = book.pages.length;
 
@@ -56,21 +55,53 @@ export default function BookViewer({
   const swipeHandlers = useSwipe({
     onSwipeLeft: goToNextPage,
     onSwipeRight: goToPrevPage,
+    onSwipeUp: () => {
+      if (isZoomedRef.current) return;
+      if (pageIndex === 0) onCloseUp();
+    },
+    onSwipeDown: () => {
+      if (isZoomedRef.current) return;
+      if (pageIndex === totalPages - 1) onCloseDown();
+    },
   });
 
-  const handleContainerTouchStart = useCallback((e: React.TouchEvent) => {
+  // Mouse drag support for desktop
+  const mouseStartRef = useRef<{ x: number; y: number; startTime: number } | null>(null);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isZoomedRef.current) return;
-    startYRef.current = e.touches[0].clientY;
+    mouseStartRef.current = { x: e.clientX, y: e.clientY, startTime: Date.now() };
   }, []);
 
-  const handleContainerTouchEnd = useCallback((e: React.TouchEvent) => {
-    if (isZoomedRef.current) return;
-    const endY = e.changedTouches[0].clientY;
-    const deltaY = endY - startYRef.current;
-    if (Math.abs(deltaY) < 80) return;
-    if (deltaY < 0) onCloseUp();
-    else onCloseDown();
-  }, [onCloseUp, onCloseDown]);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Just track - nothing to do during move
+  }, []);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (!mouseStartRef.current || isZoomedRef.current) return;
+    const { x, y, startTime } = mouseStartRef.current;
+    const deltaX = e.clientX - x;
+    const deltaY = e.clientY - y;
+    const elapsed = Date.now() - startTime;
+    mouseStartRef.current = null;
+
+    // Ignore if it took too long (was probably a click/drag select)
+    if (elapsed > 500) return;
+
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+    const threshold = 50;
+
+    if (absX > absY && absX > threshold) {
+      // Horizontal swipe
+      if (deltaX < 0) goToNextPage();
+      else goToPrevPage();
+    } else if (absY > absX && absY > threshold) {
+      // Vertical swipe - only at boundaries
+      if (deltaY < 0 && pageIndex === 0) onCloseUp();
+      else if (deltaY > 0 && pageIndex === totalPages - 1) onCloseDown();
+    }
+  }, [goToNextPage, goToPrevPage, pageIndex, totalPages, onCloseUp, onCloseDown]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -96,17 +127,19 @@ export default function BookViewer({
       className={`fixed inset-0 z-50 bg-bark flex flex-col overflow-hidden ${animClass}`}
       key={`${book.id}-${transitionKey}`}
       onTouchStart={(e) => {
-        handleContainerTouchStart(e);
         if (!isZoomedRef.current) swipeHandlers.onTouchStart(e);
       }}
       onTouchMove={(e) => {
         if (!isZoomedRef.current) swipeHandlers.onTouchMove(e);
       }}
       onTouchEnd={(e) => {
-        handleContainerTouchEnd(e);
         if (!isZoomedRef.current) swipeHandlers.onTouchEnd(e);
       }}
-      style={{ touchAction: 'pan-y' }}
+      style={{ touchAction: 'none' }}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
       {/* Top bar */}
       <div
