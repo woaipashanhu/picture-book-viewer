@@ -63,45 +63,37 @@ export default function BookViewer({
       if (isZoomedRef.current) return;
       if (pageIndex === totalPages - 1) onCloseDown();
     },
-  });
+  }, !isZoomedRef.current);
 
-  // Mouse drag support for desktop
-  const mouseStartRef = useRef<{ x: number; y: number; startTime: number } | null>(null);
+  // Distinguish click vs swipe for toggling info bar
+  const mouseDownPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (isZoomedRef.current) return;
-    mouseStartRef.current = { x: e.clientX, y: e.clientY, startTime: Date.now() };
-  }, []);
+    mouseDownPosRef.current = { x: e.clientX, y: e.clientY };
+    swipeHandlers.onMouseDown(e);
+  }, [swipeHandlers]);
 
-  const handleMouseMove = useCallback((_e: React.MouseEvent) => {
-    // Just track - nothing to do during move
-  }, []);
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    swipeHandlers.onMouseMove(e);
+  }, [swipeHandlers]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
-    if (!mouseStartRef.current || isZoomedRef.current) return;
-    const { x, y, startTime } = mouseStartRef.current;
-    const deltaX = e.clientX - x;
-    const deltaY = e.clientY - y;
-    const elapsed = Date.now() - startTime;
-    mouseStartRef.current = null;
-
-    // Ignore if it took too long (was probably a click/drag select)
-    if (elapsed > 500) return;
-
-    const absX = Math.abs(deltaX);
-    const absY = Math.abs(deltaY);
-    const threshold = 50;
-
-    if (absX > absY && absX > threshold) {
-      // Horizontal swipe
-      if (deltaX < 0) goToNextPage();
-      else goToPrevPage();
-    } else if (absY > absX && absY > threshold) {
-      // Vertical swipe - only at boundaries
-      if (deltaY < 0 && pageIndex === 0) onCloseUp();
-      else if (deltaY > 0 && pageIndex === totalPages - 1) onCloseDown();
+    // If it was a click (not a swipe), toggle info
+    if (mouseDownPosRef.current && !isZoomedRef.current) {
+      const dx = Math.abs(e.clientX - mouseDownPosRef.current.x);
+      const dy = Math.abs(e.clientY - mouseDownPosRef.current.y);
+      if (dx < 10 && dy < 10) {
+        setShowInfo(prev => !prev);
+      }
     }
-  }, [goToNextPage, goToPrevPage, pageIndex, totalPages, onCloseUp, onCloseDown]);
+    mouseDownPosRef.current = null;
+    swipeHandlers.onMouseUp(e);
+  }, [swipeHandlers]);
+
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    // Prevent click from firing after swipe - let mouseUp handle it
+    e.preventDefault();
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -135,11 +127,12 @@ export default function BookViewer({
       onTouchEnd={(e) => {
         if (!isZoomedRef.current) swipeHandlers.onTouchEnd(e);
       }}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: 'none', userSelect: 'none' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onClick={handleClick}
     >
       {/* Top bar */}
       <div
@@ -149,7 +142,7 @@ export default function BookViewer({
       >
         <div className="bg-gradient-to-b from-black/50 to-transparent px-5 pt-safe-top pb-6">
           <button
-            onClick={onBackToGrid}
+            onClick={(e) => { e.stopPropagation(); onBackToGrid(); }}
             className="flex items-center gap-2 text-white/90 active:text-white transition-colors"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -161,15 +154,12 @@ export default function BookViewer({
       </div>
 
       {/* Image with pinch zoom */}
-      <div
-        className="flex-1 p-2 cursor-pointer"
-        onClick={() => !isZoomedRef.current && setShowInfo(prev => !prev)}
-      >
+      <div className="flex-1 p-2">
         <PinchZoom onZoomChange={handleZoomChange}>
           <img
             src={currentImage}
             alt={`${book.title} - Page ${pageIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-lg select-none"
+            className="max-w-full max-h-full object-contain rounded-lg select-none pointer-events-none"
             draggable={false}
           />
         </PinchZoom>

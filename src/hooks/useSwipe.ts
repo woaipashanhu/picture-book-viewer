@@ -7,58 +7,41 @@ interface SwipeHandlers {
   onSwipeDown?: () => void;
 }
 
+const THRESHOLD = 50;
+const MAX_TIME = 500;
+
 interface SwipeState {
   startX: number;
   startY: number;
+  startTime: number;
   isSwiping: boolean;
   direction: 'horizontal' | 'vertical' | null;
+  hasMoved: boolean;
 }
 
-const THRESHOLD = 50;
-const DIRECTION_LOCK_THRESHOLD = 15;
-
-export function useSwipe(handlers: SwipeHandlers) {
+export function useSwipe(handlers: SwipeHandlers, enabled: boolean = true) {
   const stateRef = useRef<SwipeState>({
     startX: 0,
     startY: 0,
+    startTime: 0,
     isSwiping: false,
     direction: null,
+    hasMoved: false,
   });
 
-  const onTouchStart = useCallback((e: React.TouchEvent) => {
-    const touch = e.touches[0];
-    stateRef.current = {
-      startX: touch.clientX,
-      startY: touch.clientY,
-      isSwiping: true,
-      direction: null,
-    };
-  }, []);
-
-  const onTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!stateRef.current.isSwiping || stateRef.current.direction) return;
-    const touch = e.touches[0];
-    const deltaX = touch.clientX - stateRef.current.startX;
-    const deltaY = touch.clientY - stateRef.current.startY;
-
-    if (Math.abs(deltaX) > DIRECTION_LOCK_THRESHOLD || Math.abs(deltaY) > DIRECTION_LOCK_THRESHOLD) {
-      stateRef.current.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
-    }
-  }, []);
-
-  const onTouchEnd = useCallback((_e?: React.TouchEvent) => {
-    const { startX, startY, direction, isSwiping } = stateRef.current;
+  const detectSwipe = useCallback((endX: number, endY: number) => {
+    const { startX, startY, startTime, direction, isSwiping } = stateRef.current;
     if (!isSwiping) return;
 
-    // Get the actual end position from the event if available
-    const currentTouch = _e?.changedTouches?.[0];
-    const endX = currentTouch?.clientX ?? startX;
-    const endY = currentTouch?.clientY ?? startY;
+    const elapsed = Date.now() - startTime;
+    if (elapsed > MAX_TIME) {
+      stateRef.current.isSwiping = false;
+      return;
+    }
 
     const deltaX = endX - startX;
     const deltaY = endY - startY;
 
-    // If direction was determined, use it; otherwise check both
     if (direction === 'horizontal' || (!direction && Math.abs(deltaX) > Math.abs(deltaY))) {
       if (Math.abs(deltaX) > THRESHOLD) {
         if (deltaX < 0) handlers.onSwipeLeft?.();
@@ -73,7 +56,68 @@ export function useSwipe(handlers: SwipeHandlers) {
 
     stateRef.current.isSwiping = false;
     stateRef.current.direction = null;
+    stateRef.current.hasMoved = false;
   }, [handlers]);
 
-  return { onTouchStart, onTouchMove, onTouchEnd };
+  // Touch handlers
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!enabled) return;
+    const touch = e.touches[0];
+    stateRef.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      startTime: Date.now(),
+      isSwiping: true,
+      direction: null,
+      hasMoved: false,
+    };
+  }, [enabled]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!enabled || !stateRef.current.isSwiping || stateRef.current.direction) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - stateRef.current.startX;
+    const deltaY = touch.clientY - stateRef.current.startY;
+    const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    if (dist > 10) {
+      stateRef.current.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+  }, [enabled]);
+
+  const onTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (!enabled) return;
+    const touch = e.changedTouches[0];
+    detectSwipe(touch.clientX, touch.clientY);
+  }, [enabled, detectSwipe]);
+
+  // Mouse handlers for desktop
+  const onMouseDown = useCallback((e: React.MouseEvent) => {
+    if (!enabled) return;
+    e.preventDefault();
+    stateRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startTime: Date.now(),
+      isSwiping: true,
+      direction: null,
+      hasMoved: false,
+    };
+  }, [enabled]);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!enabled || !stateRef.current.isSwiping || stateRef.current.direction) return;
+    const deltaX = e.clientX - stateRef.current.startX;
+    const deltaY = e.clientY - stateRef.current.startY;
+    const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    if (dist > 10) {
+      stateRef.current.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+    }
+  }, [enabled]);
+
+  const onMouseUp = useCallback((e: React.MouseEvent) => {
+    if (!enabled) return;
+    detectSwipe(e.clientX, e.clientY);
+  }, [enabled, detectSwipe]);
+
+  return { onTouchStart, onTouchMove, onTouchEnd, onMouseDown, onMouseMove, onMouseUp };
 }
