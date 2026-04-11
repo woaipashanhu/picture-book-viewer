@@ -28,6 +28,7 @@ export default function BookViewer({
   const [transitionKey, setTransitionKey] = useState(0);
   const [animClass, setAnimClass] = useState('');
   const [autoPlay, setAutoPlay] = useState(false);
+  const [checking, setChecking] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
   const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -87,14 +88,12 @@ export default function BookViewer({
     setPageIndex(prev => prev + 1);
   }, [pageIndex, totalPages]);
 
-  // Next book: slides in from bottom
   const goToNextBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === totalBooks - 1 ? 0 : bookIndex + 1;
     onGoToBook(newIndex, 'from-bottom');
   }, [bookIndex, totalBooks, onGoToBook]);
 
-  // Prev book: slides in from top
   const goToPrevBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
@@ -103,6 +102,29 @@ export default function BookViewer({
 
   const toggleAutoPlay = useCallback(() => {
     setAutoPlay(prev => !prev);
+  }, []);
+
+  const handleUpdate = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setChecking(true);
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        if (registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          return;
+        }
+        await registration.update();
+        setTimeout(() => {
+          setChecking(false);
+          window.location.reload();
+        }, 1500);
+      } else {
+        window.location.reload();
+      }
+    } catch {
+      window.location.reload();
+    }
   }, []);
 
   const swipeHandlers = useSwipe({
@@ -173,6 +195,31 @@ export default function BookViewer({
         </button>
       </div>
 
+      {/* Top-right: Update button */}
+      <div className="absolute top-0 right-0 z-50">
+        <button
+          onClick={handleUpdate}
+          className="mt-10 mr-4 flex items-center gap-1.5 px-3 py-2 rounded-lg
+                     bg-black/20 hover:bg-black/40 active:bg-black/50
+                     backdrop-blur-sm transition-all duration-200 cursor-pointer"
+          title="检查更新"
+        >
+          {checking ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+              <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
+              <path d="M21.5 2v6h-6" />
+              <path d="M2.5 22v-6h6" />
+              <path d="M2.11 13.51A10 10 0 0 1 20.39 6.11L21.5 8" />
+              <path d="M21.89 10.49A10 10 0 0 1 3.61 17.89L2.5 16" />
+            </svg>
+          )}
+          <span className="text-white/80 text-xs font-body">{checking ? '检查中' : '更新'}</span>
+        </button>
+      </div>
+
       {/* Right side controls */}
       <div className="fixed right-2 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
         {/* Auto play button */}
@@ -197,7 +244,6 @@ export default function BookViewer({
           )}
         </button>
 
-        {/* Spacer */}
         <div className="h-3" />
 
         {/* Right arrow (next page) */}
@@ -216,14 +262,12 @@ export default function BookViewer({
           </svg>
         </button>
 
-        {/* Spacer before book nav */}
         <div className="h-4" />
 
-        {/* Next book - down arrow */}
+        {/* Next book */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
-          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
-                     opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
           style={btnBg}
         >
           <div className="flex flex-col items-center leading-none">
@@ -235,11 +279,10 @@ export default function BookViewer({
           </div>
         </button>
 
-        {/* Prev book - up arrow */}
+        {/* Prev book */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
-          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
-                     opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
           style={btnBg}
         >
           <div className="flex flex-col items-center leading-none">
