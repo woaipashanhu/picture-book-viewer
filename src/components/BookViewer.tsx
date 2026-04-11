@@ -43,14 +43,14 @@ export default function BookViewer({
   }, [book.id, direction]);
 
   const goToPrevPage = useCallback(() => {
-    if (isZoomedRef.current) return;
-    setPageIndex(prev => (prev > 0 ? prev - 1 : prev));
-  }, []);
+    if (isZoomedRef.current || pageIndex <= 0) return;
+    setPageIndex(prev => prev - 1);
+  }, [pageIndex]);
 
   const goToNextPage = useCallback(() => {
-    if (isZoomedRef.current) return;
-    setPageIndex(prev => (prev < totalPages - 1 ? prev + 1 : prev));
-  }, []);
+    if (isZoomedRef.current || pageIndex >= totalPages - 1) return;
+    setPageIndex(prev => prev + 1);
+  }, [pageIndex, totalPages]);
 
   const swipeHandlers = useSwipe({
     onSwipeLeft: goToNextPage,
@@ -82,6 +82,8 @@ export default function BookViewer({
   }, []);
 
   const currentImage = book.pages[pageIndex] || book.cover;
+  const isFirst = pageIndex === 0;
+  const isLast = pageIndex === totalPages - 1;
 
   return (
     <div
@@ -98,7 +100,6 @@ export default function BookViewer({
         if (!isZoomedRef.current) swipeHandlers.onTouchEnd(e);
       }}
       style={{ touchAction: 'none', userSelect: 'none' }}
-      onClick={() => !isZoomedRef.current && setShowInfo(prev => !prev)}
     >
       {/* Top bar */}
       <div
@@ -130,33 +131,35 @@ export default function BookViewer({
           />
         </PinchZoom>
 
-        {/* Left arrow */}
-        {pageIndex > 0 && (
-          <button
-            onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
-            className="absolute left-1 top-1/2 -translate-y-1/2 w-12 h-20 flex items-center justify-center
-                       bg-black/20 hover:bg-black/40 active:bg-black/50 rounded-xl
-                       transition-all duration-200 backdrop-blur-sm cursor-pointer z-20"
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </button>
-        )}
+        {/* Left arrow - always visible, disabled when first page */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
+          className={`absolute left-1 top-1/2 -translate-y-1/2 w-14 h-24 flex items-center justify-center rounded-xl transition-all duration-200 z-20 ${
+            isFirst
+              ? 'bg-black/5 cursor-not-allowed'
+              : 'bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm cursor-pointer'
+          }`}
+          disabled={isFirst}
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={isFirst ? 'stroke-gray-400/40' : 'stroke-white/70'}>
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
 
-        {/* Right arrow */}
-        {pageIndex < totalPages - 1 && (
-          <button
-            onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
-            className="absolute right-1 top-1/2 -translate-y-1/2 w-12 h-20 flex items-center justify-center
-                       bg-black/20 hover:bg-black/40 active:bg-black/50 rounded-xl
-                       transition-all duration-200 backdrop-blur-sm cursor-pointer z-20"
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.7">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </button>
-        )}
+        {/* Right arrow - always visible, disabled when last page */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
+          className={`absolute right-1 top-1/2 -translate-y-1/2 w-14 h-24 flex items-center justify-center rounded-xl transition-all duration-200 z-20 ${
+            isLast
+              ? 'bg-black/5 cursor-not-allowed'
+              : 'bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm cursor-pointer'
+          }`}
+          disabled={isLast}
+        >
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={isLast ? 'stroke-gray-400/40' : 'stroke-white/70'}>
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
       </div>
 
       {/* Bottom bar */}
