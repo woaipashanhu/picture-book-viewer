@@ -128,7 +128,7 @@ export default function PinchZoom({ children, onZoomChange }: PinchZoomProps) {
     <div
       ref={containerRef}
       className="w-full h-full flex items-center justify-center overflow-hidden"
-      style={{ touchAction: isZoomedRef.current ? 'none' : 'pan-y' }}
+      style={{ touchAction: 'none' }}
       onClick={!isZoomedRef.current ? handleTap : undefined}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
