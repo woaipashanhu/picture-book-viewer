@@ -41,8 +41,10 @@ export default function BookViewer({
     setAutoPlay(false);
 
     if (direction === 'up') {
+      // Prev book: new book slides in from top
       setAnimClass('animate-slide-down');
     } else if (direction === 'down') {
+      // Next book: new book slides in from bottom
       setAnimClass('animate-slide-up');
     } else {
       setAnimClass('animate-fade-in');
@@ -87,13 +89,13 @@ export default function BookViewer({
   const goToPrevBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
-    onGoToBook(newIndex, 'up');
+    onGoToBook(newIndex, 'down');
   }, [bookIndex, totalBooks, onGoToBook]);
 
   const goToNextBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === totalBooks - 1 ? 0 : bookIndex + 1;
-    onGoToBook(newIndex, 'down');
+    onGoToBook(newIndex, 'up');
   }, [bookIndex, totalBooks, onGoToBook]);
 
   const toggleAutoPlay = useCallback(() => {
@@ -214,7 +216,7 @@ export default function BookViewer({
         {/* Spacer before book nav */}
         <div className="h-4" />
 
-        {/* Next book - down arrow (always enabled, wraps around) */}
+        {/* Next book - down arrow */}
         <button
           onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
@@ -230,7 +232,7 @@ export default function BookViewer({
           </div>
         </button>
 
-        {/* Prev book - up arrow (always enabled, wraps around) */}
+        {/* Prev book - up arrow */}
         <button
           onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
           className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
