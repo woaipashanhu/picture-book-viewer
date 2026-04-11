@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useBooks } from './hooks/useBooks';
 import BookGrid from './components/BookGrid';
 import BookViewer from './components/BookViewer';
