@@ -58,5 +58,23 @@
       "./books/04-灰大门到橘子洲/page-16.jpg",
       "./books/04-灰大门到橘子洲/page-17.jpg"
     ]
+  },
+  {
+    "id": "05-福州亲子出行记",
+    "title": "福州亲子出行记",
+    "description": "父子俩去福州旅行的趣事。坐专车绕路晕车肚子疼，爸爸幽默化解，后来改坐地铁，吃了太二酸菜鱼，开开心心结束旅程。",
+    "date": "2026-04-11",
+    "cover": "./books/05-福州亲子出行记/page-01.png",
+    "pages": [
+      "./books/05-福州亲子出行记/page-01.png",
+      "./books/05-福州亲子出行记/page-02.png",
+      "./books/05-福州亲子出行记/page-03.png",
+      "./books/05-福州亲子出行记/page-04.png",
+      "./books/05-福州亲子出行记/page-05.png",
+      "./books/05-福州亲子出行记/page-06.png",
+      "./books/05-福州亲子出行记/page-07.png",
+      "./books/05-福州亲子出行记/page-08.png",
+      "./books/05-福州亲子出行记/page-09.png"
+    ]
   }
 ]
