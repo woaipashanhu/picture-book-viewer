@@ -15,6 +15,10 @@ export default function App() {
     setViewState({ screen: 'viewer', bookIndex: index, direction: 'none' });
   }, []);
 
+  const goToBook = useCallback((index: number, direction: 'up' | 'down' | 'none' = 'none') => {
+    setViewState({ screen: 'viewer', bookIndex: index, direction });
+  }, []);
+
   const closeToGrid = useCallback((direction: 'up' | 'down') => {
     setViewState(prev => {
       if (prev.screen !== 'viewer') return prev;
@@ -45,13 +49,21 @@ export default function App() {
   }
 
   const book = books[viewState.bookIndex];
+  const totalBooks = books.length;
+  const isFirstBook = viewState.bookIndex === 0;
+  const isLastBook = viewState.bookIndex === totalBooks - 1;
+
   return (
     <BookViewer
       book={book}
+      bookIndex={viewState.bookIndex}
+      isFirstBook={isFirstBook}
+      isLastBook={isLastBook}
       direction={viewState.direction}
       onCloseUp={() => closeToGrid('up')}
       onCloseDown={() => closeToGrid('down')}
       onBackToGrid={backToGrid}
+      onGoToBook={goToBook}
     />
   );
 }
