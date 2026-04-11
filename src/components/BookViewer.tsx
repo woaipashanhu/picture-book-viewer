@@ -93,6 +93,11 @@ export default function BookViewer({
     onGoToBook(newIndex, 'from-bottom');
   }, [bookIndex, totalBooks, onGoToBook]);
 
+  const goToFirstPage = useCallback(() => {
+    if (isZoomedRef.current) return;
+    setPageIndex(0);
+  }, []);
+
   const goToPrevBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
@@ -248,22 +253,46 @@ export default function BookViewer({
         </button>
       </div>
 
-      {/* Left arrow - shifted right with left-3 */}
-      <button
-        onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
-        className={`fixed left-3 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
-                    ${btnBase}
-                    ${isFirstPage
-                      ? 'opacity-30 cursor-not-allowed'
-                      : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
-                    }`}
-        style={btnBg}
-        disabled={isFirstPage}
-      >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
-          <path d="M15 18l-6-6 6-6" />
-        </svg>
-      </button>
+      {/* Left side controls */}
+      <div className="fixed left-3 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
+        {/* Left arrow (prev page) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
+          className={`w-12 h-16 md:w-14 md:h-24 ${btnBase}
+                     ${isFirstPage
+                       ? 'opacity-30 cursor-not-allowed'
+                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
+                     }`}
+          style={btnBg}
+          disabled={isFirstPage}
+        >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+
+        <div className="h-3" />
+
+        {/* Go to cover (first page) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToFirstPage(); }}
+          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase}
+                     ${isFirstPage
+                       ? 'opacity-30 cursor-not-allowed'
+                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
+                     }`}
+          style={btnBg}
+          disabled={isFirstPage}
+        >
+          <div className="flex flex-col items-center leading-none">
+            <span className="text-white/80 text-[10px] font-body whitespace-nowrap">封面</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
+              <path d="M11 17l-5-5 5-5" />
+              <path d="M18 17l-5-5 5-5" />
+            </svg>
+          </div>
+        </button>
+      </div>
 
       {/* Image area - reduced horizontal padding to avoid buttons covering image */}
       <div className="flex-1 px-20 py-2 flex items-center justify-center">
