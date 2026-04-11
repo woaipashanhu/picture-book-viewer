@@ -120,46 +120,52 @@ export default function BookViewer({
         </div>
       </div>
 
-      {/* Image with pinch zoom */}
-      <div className="flex-1 p-2 relative">
+      {/* Navigation arrows - fixed to viewport edges, outside image area */}
+      {/* Left arrow */}
+      <button
+        onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
+        className={`fixed left-2 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
+                    flex items-center justify-center rounded-xl transition-all duration-200
+                    ${isFirst
+                      ? 'opacity-30 cursor-not-allowed'
+                      : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
+                    }`}
+        style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+        disabled={isFirst}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+
+      {/* Right arrow */}
+      <button
+        onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
+        className={`fixed right-2 top-1/2 -translate-y-1/2 z-40 w-12 h-16 md:w-14 md:h-24
+                    flex items-center justify-center rounded-xl transition-all duration-200
+                    ${isLast
+                      ? 'opacity-30 cursor-not-allowed'
+                      : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
+                    }`}
+        style={{ background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+        disabled={isLast}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </button>
+
+      {/* Image area */}
+      <div className="flex-1 px-16 py-2 flex items-center justify-center">
         <PinchZoom onZoomChange={handleZoomChange}>
           <img
             src={currentImage}
             alt={`${book.title} - Page ${pageIndex + 1}`}
             className="max-w-full max-h-full object-contain rounded-lg select-none"
             draggable={false}
+            onClick={() => !isZoomedRef.current && setShowInfo(prev => !prev)}
           />
         </PinchZoom>
-
-        {/* Left arrow - always visible, disabled when first page */}
-        <button
-          onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
-          className={`absolute left-1 top-1/2 -translate-y-1/2 w-14 h-24 flex items-center justify-center rounded-xl transition-all duration-200 z-20 ${
-            isFirst
-              ? 'bg-black/5 cursor-not-allowed'
-              : 'bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm cursor-pointer'
-          }`}
-          disabled={isFirst}
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={isFirst ? 'stroke-gray-400/40' : 'stroke-white/70'}>
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-
-        {/* Right arrow - always visible, disabled when last page */}
-        <button
-          onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
-          className={`absolute right-1 top-1/2 -translate-y-1/2 w-14 h-24 flex items-center justify-center rounded-xl transition-all duration-200 z-20 ${
-            isLast
-              ? 'bg-black/5 cursor-not-allowed'
-              : 'bg-black/20 hover:bg-black/40 active:bg-black/50 backdrop-blur-sm cursor-pointer'
-          }`}
-          disabled={isLast}
-        >
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={isLast ? 'stroke-gray-400/40' : 'stroke-white/70'}>
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
       </div>
 
       {/* Bottom bar */}
