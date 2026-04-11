@@ -7,18 +7,18 @@ interface BookViewerProps {
   book: Book;
   bookIndex: number;
   totalBooks: number;
-  direction: 'up' | 'down' | 'none';
+  slideDirection: 'from-bottom' | 'from-top' | 'none';
   onCloseUp: () => void;
   onCloseDown: () => void;
   onBackToGrid: () => void;
-  onGoToBook: (index: number, direction?: 'up' | 'down' | 'none') => void;
+  onGoToBook: (index: number, slideDirection?: 'from-bottom' | 'from-top' | 'none') => void;
 }
 
 export default function BookViewer({
   book,
   bookIndex,
   totalBooks,
-  direction,
+  slideDirection,
   onCloseUp,
   onCloseDown,
   onBackToGrid,
@@ -40,16 +40,17 @@ export default function BookViewer({
     isZoomedRef.current = false;
     setAutoPlay(false);
 
-    if (direction === 'up') {
-      // Prev book: new book slides in from top
-      setAnimClass('animate-slide-down');
-    } else if (direction === 'down') {
-      // Next book: new book slides in from bottom
-      setAnimClass('animate-slide-up');
-    } else {
-      setAnimClass('animate-fade-in');
+    switch (slideDirection) {
+      case 'from-bottom':
+        setAnimClass('animate-slide-in-bottom');
+        break;
+      case 'from-top':
+        setAnimClass('animate-slide-in-top');
+        break;
+      default:
+        setAnimClass('animate-fade-in');
     }
-  }, [book.id, direction]);
+  }, [book.id, slideDirection]);
 
   useEffect(() => {
     if (autoPlayTimerRef.current) {
@@ -86,16 +87,18 @@ export default function BookViewer({
     setPageIndex(prev => prev + 1);
   }, [pageIndex, totalPages]);
 
-  const goToPrevBook = useCallback(() => {
-    setAutoPlay(false);
-    const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
-    onGoToBook(newIndex, 'down');
-  }, [bookIndex, totalBooks, onGoToBook]);
-
+  // Next book: slides in from bottom
   const goToNextBook = useCallback(() => {
     setAutoPlay(false);
     const newIndex = bookIndex === totalBooks - 1 ? 0 : bookIndex + 1;
-    onGoToBook(newIndex, 'up');
+    onGoToBook(newIndex, 'from-bottom');
+  }, [bookIndex, totalBooks, onGoToBook]);
+
+  // Prev book: slides in from top
+  const goToPrevBook = useCallback(() => {
+    setAutoPlay(false);
+    const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
+    onGoToBook(newIndex, 'from-top');
   }, [bookIndex, totalBooks, onGoToBook]);
 
   const toggleAutoPlay = useCallback(() => {

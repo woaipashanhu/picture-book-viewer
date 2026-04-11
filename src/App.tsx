@@ -5,7 +5,7 @@ import BookViewer from './components/BookViewer';
 
 type ViewState =
   | { screen: 'grid' }
-  | { screen: 'viewer'; bookIndex: number; direction: 'up' | 'down' | 'none' };
+  | { screen: 'viewer'; bookIndex: number; slideDirection: 'from-bottom' | 'from-top' | 'none' };
 
 export default function App() {
   const { books, loading } = useBooks();
@@ -14,23 +14,28 @@ export default function App() {
   const totalBooks = books.length;
 
   const openBook = useCallback((index: number) => {
-    setViewState({ screen: 'viewer', bookIndex: index, direction: 'none' });
+    setViewState({ screen: 'viewer', bookIndex: index, slideDirection: 'none' });
   }, []);
 
-  const goToBook = useCallback((index: number, direction: 'up' | 'down' | 'none' = 'none') => {
-    setViewState({ screen: 'viewer', bookIndex: index, direction });
+  const goToBook = useCallback((index: number, slideDirection: 'from-bottom' | 'from-top' | 'none' = 'none') => {
+    setViewState({ screen: 'viewer', bookIndex: index, slideDirection });
   }, []);
 
-  const closeToGrid = useCallback((direction: 'up' | 'down') => {
+  const closeToGrid = useCallback((swipeDir: 'up' | 'down') => {
     setViewState(prev => {
       if (prev.screen !== 'viewer') return prev;
       let newIndex: number;
-      if (direction === 'up') {
-        newIndex = prev.bookIndex === 0 ? totalBooks - 1 : prev.bookIndex - 1;
-      } else {
+      if (swipeDir === 'up') {
+        // User swiped up = wants next book
         newIndex = prev.bookIndex === totalBooks - 1 ? 0 : prev.bookIndex + 1;
+        // Next book slides in from bottom
+        return { screen: 'viewer', bookIndex: newIndex, slideDirection: 'from-bottom' };
+      } else {
+        // User swiped down = wants prev book
+        newIndex = prev.bookIndex === 0 ? totalBooks - 1 : prev.bookIndex - 1;
+        // Prev book slides in from top
+        return { screen: 'viewer', bookIndex: newIndex, slideDirection: 'from-top' };
       }
-      return { screen: 'viewer', bookIndex: newIndex, direction };
     });
   }, [totalBooks]);
 
@@ -60,7 +65,7 @@ export default function App() {
       book={book}
       bookIndex={viewState.bookIndex}
       totalBooks={totalBooks}
-      direction={viewState.direction}
+      slideDirection={viewState.slideDirection}
       onCloseUp={() => closeToGrid('up')}
       onCloseDown={() => closeToGrid('down')}
       onBackToGrid={backToGrid}
