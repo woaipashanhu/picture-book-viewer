@@ -24,7 +24,7 @@ export default defineConfig({
             options: {
               cacheName: 'book-images',
               expiration: {
-                maxEntries: 2000,
+                maxEntries: 10000,
               },
               cacheableResponse: {
                 statuses: [0, 200],
