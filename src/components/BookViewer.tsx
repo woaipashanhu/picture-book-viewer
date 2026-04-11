@@ -21,7 +21,6 @@ export default function BookViewer({
   const [pageIndex, setPageIndex] = useState(0);
   const [transitionKey, setTransitionKey] = useState(0);
   const [animClass, setAnimClass] = useState('');
-  const [showInfo, setShowInfo] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
 
@@ -30,7 +29,6 @@ export default function BookViewer({
   useEffect(() => {
     setTransitionKey(prev => prev + 1);
     setPageIndex(0);
-    setShowInfo(false);
     isZoomedRef.current = false;
 
     if (direction === 'up') {
@@ -101,26 +99,22 @@ export default function BookViewer({
       }}
       style={{ touchAction: 'none', userSelect: 'none' }}
     >
-      {/* Top bar */}
-      <div
-        className={`absolute top-0 left-0 right-0 z-30 transition-all duration-300 ${
-          showInfo ? 'opacity-100' : 'opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="bg-gradient-to-b from-black/50 to-transparent px-5 pt-safe-top pb-6">
-          <button
-            onClick={(e) => { e.stopPropagation(); onBackToGrid(); }}
-            className="flex items-center gap-2 text-white/90 active:text-white transition-colors"
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-            <span className="font-body text-sm">Back</span>
-          </button>
-        </div>
+      {/* Back button - always visible, positioned below top safe area */}
+      <div className="absolute top-0 left-0 z-40">
+        <button
+          onClick={(e) => { e.stopPropagation(); onBackToGrid(); }}
+          className="mt-10 ml-4 flex items-center gap-2 px-3 py-2 rounded-lg
+                     bg-black/20 hover:bg-black/40 active:bg-black/50
+                     backdrop-blur-sm transition-all duration-200 cursor-pointer"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+          <span className="text-white/80 font-body text-sm">Back</span>
+        </button>
       </div>
 
-      {/* Navigation arrows - fixed to viewport edges, outside image area */}
+      {/* Navigation arrows - fixed to viewport edges */}
       {/* Left arrow */}
       <button
         onClick={(e) => { e.stopPropagation(); goToPrevPage(); }}
@@ -163,7 +157,6 @@ export default function BookViewer({
             alt={`${book.title} - Page ${pageIndex + 1}`}
             className="max-w-full max-h-full object-contain rounded-lg select-none"
             draggable={false}
-            onClick={() => !isZoomedRef.current && setShowInfo(prev => !prev)}
           />
         </PinchZoom>
       </div>
