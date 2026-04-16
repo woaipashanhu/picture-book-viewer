@@ -309,9 +309,7 @@ export default function BookViewer({
       {/* Bottom bar */}
       <div className="absolute bottom-0 left-0 right-0 z-30">
         <div className="bg-gradient-to-t from-black/50 to-transparent px-5 pt-6 pb-6">
-          <p className="text-white/80 text-center font-display text-sm font-semibold">
-            {book.title}
-          </p>
+
           <div className="flex items-center justify-center gap-2 mt-2">
             {book.pages.map((_, i) => (
               <div
