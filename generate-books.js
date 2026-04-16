@@ -41,7 +41,9 @@ function scanBooks() {
       description: info.description || '',
       date: info.date || '',
       cover: `./books/${entry.name}/${coverFile}`,
-      pages: pageFiles.map(f => `./books/${entry.name}/${f}`),
+      pages: (!/^cover\./i.test(coverFile))
+        ? pageFiles.map(f => `./books/${entry.name}/${f}`)
+        : [coverFile, ...pageFiles].map(f => `./books/${entry.name}/${f}`),
     };
   });
 
