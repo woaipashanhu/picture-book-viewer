@@ -162,5 +162,18 @@
       "./books/13-从重庆到成都/page-06.jpg",
       "./books/13-从重庆到成都/page-07.jpg"
     ]
+  },
+  {
+    "id": "14-从重庆回广州",
+    "title": "从重庆回广州",
+    "description": "刘费曼一家从重庆返回广州",
+    "date": "2026-05-22",
+    "cover": "./books/14-从重庆回广州/cover.jpg",
+    "pages": [
+      "./books/14-从重庆回广州/cover.jpg",
+      "./books/14-从重庆回广州/page-01.jpg",
+      "./books/14-从重庆回广州/page-02.jpg",
+      "./books/14-从重庆回广州/page-03.jpg"
+    ]
   }
 ]
