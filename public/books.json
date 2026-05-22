@@ -113,5 +113,27 @@
       "./books/09-爸爸被蜜蜂蛰了/page-05.jpg",
       "./books/09-爸爸被蜜蜂蛰了/page-06.jpg"
     ]
+  },
+  {
+    "id": "11-广州到重庆",
+    "title": "广州到重庆",
+    "description": "刘费曼一家的重庆之旅第一天——从广州出发，坐高铁到达重庆，体验地铁换乘，入住红旗沟。",
+    "date": "2026-05-22",
+    "cover": "./books/11-广州到重庆/cover.jpg",
+    "pages": [
+      "./books/11-广州到重庆/cover.jpg",
+      "./books/11-广州到重庆/aunt.jpg",
+      "./books/11-广州到重庆/boy.jpg",
+      "./books/11-广州到重庆/dad.jpg",
+      "./books/11-广州到重庆/grandma.jpg",
+      "./books/11-广州到重庆/grandpa.jpg",
+      "./books/11-广州到重庆/mom.jpg",
+      "./books/11-广州到重庆/page-01.jpg",
+      "./books/11-广州到重庆/page-02.jpg",
+      "./books/11-广州到重庆/page-03.jpg",
+      "./books/11-广州到重庆/page-04.jpg",
+      "./books/11-广州到重庆/page-05.jpg",
+      "./books/11-广州到重庆/page-06.jpg"
+    ]
   }
 ]
