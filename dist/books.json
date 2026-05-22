@@ -129,5 +129,21 @@
       "./books/11-广州到重庆/page-05.jpg",
       "./books/11-广州到重庆/page-06.jpg"
     ]
+  },
+  {
+    "id": "12-重庆的一天",
+    "title": "重庆的一天",
+    "description": "刘费曼一家在重庆游玩的一天",
+    "date": "2026-05-22",
+    "cover": "./books/12-重庆的一天/cover.jpg",
+    "pages": [
+      "./books/12-重庆的一天/cover.jpg",
+      "./books/12-重庆的一天/page-01.jpg",
+      "./books/12-重庆的一天/page-02.jpg",
+      "./books/12-重庆的一天/page-03.jpg",
+      "./books/12-重庆的一天/page-04.jpg",
+      "./books/12-重庆的一天/page-05.jpg",
+      "./books/12-重庆的一天/page-06.jpg"
+    ]
   }
 ]
