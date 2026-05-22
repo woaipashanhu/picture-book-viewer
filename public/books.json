@@ -145,5 +145,22 @@
       "./books/12-重庆的一天/page-05.jpg",
       "./books/12-重庆的一天/page-06.jpg"
     ]
+  },
+  {
+    "id": "13-从重庆到成都",
+    "title": "从重庆到成都",
+    "description": "刘费曼一家从重庆到成都的一天",
+    "date": "2026-05-22",
+    "cover": "./books/13-从重庆到成都/cover.jpg",
+    "pages": [
+      "./books/13-从重庆到成都/cover.jpg",
+      "./books/13-从重庆到成都/page-01.jpg",
+      "./books/13-从重庆到成都/page-02.jpg",
+      "./books/13-从重庆到成都/page-03.jpg",
+      "./books/13-从重庆到成都/page-04.jpg",
+      "./books/13-从重庆到成都/page-05.jpg",
+      "./books/13-从重庆到成都/page-06.jpg",
+      "./books/13-从重庆到成都/page-07.jpg"
+    ]
   }
 ]
