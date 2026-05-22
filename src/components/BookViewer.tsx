@@ -295,7 +295,7 @@ export default function BookViewer({
       </div>
 
       {/* Image area - reduced horizontal padding to avoid buttons covering image */}
-      <div className="flex-1 px-20 py-2 flex items-center justify-center">
+      <div className="flex-1 px-4 py-2 flex items-center justify-center">
         <PinchZoom onZoomChange={handleZoomChange}>
           <img
             src={currentImage}
