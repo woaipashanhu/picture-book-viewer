@@ -4,6 +4,24 @@ import path from 'path';
 const BOOKS_DIR = path.resolve('books');
 const OUTPUT = path.resolve('public/books.json');
 
+// Load existing pageTexts/pageTextsEn if available (preserved across CI rebuilds)
+function loadExistingTexts() {
+  try {
+    const existing = JSON.parse(fs.readFileSync(OUTPUT, 'utf-8'));
+    const map = {};
+    for (const book of existing) {
+      if (book.pageTexts || book.pageTextsEn) {
+        map[book.id] = {};
+        if (book.pageTexts) map[book.id].pageTexts = book.pageTexts;
+        if (book.pageTextsEn) map[book.id].pageTextsEn = book.pageTextsEn;
+      }
+    }
+    return map;
+  } catch {
+    return {};
+  }
+}
+
 function parseInfoMd(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const frontMatter = content.match(/^---\n([\s\S]*?)\n---/);
@@ -24,6 +42,8 @@ function scanBooks() {
     .filter(e => e.isDirectory())
     .sort((a, b) => a.name.localeCompare(b.name));
 
+  const existingTexts = loadExistingTexts();
+
   const books = entries.map(entry => {
     const dirPath = path.join(BOOKS_DIR, entry.name);
     const info = parseInfoMd(path.join(dirPath, 'info.md'));
@@ -35,7 +55,7 @@ function scanBooks() {
     const coverFile = files.find(f => /^cover\./i.test(f)) || files[0];
     const pageFiles = files.filter(f => !/^cover\./i.test(f));
 
-    return {
+    const book = {
       id: entry.name,
       title: info.title || entry.name,
       description: info.description || '',
@@ -45,6 +65,15 @@ function scanBooks() {
         ? pageFiles.map(f => `./books/${entry.name}/${f}`)
         : [coverFile, ...pageFiles].map(f => `./books/${entry.name}/${f}`),
     };
+
+    // Preserve existing pageTexts and pageTextsEn
+    const existing = existingTexts[entry.name];
+    if (existing) {
+      if (existing.pageTexts) book.pageTexts = existing.pageTexts;
+      if (existing.pageTextsEn) book.pageTextsEn = existing.pageTextsEn;
+    }
+
+    return book;
   });
 
   return books;
