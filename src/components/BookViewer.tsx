@@ -28,9 +28,13 @@ export default function BookViewer({
   const [transitionKey, setTransitionKey] = useState(0);
   const [animClass, setAnimClass] = useState('');
   const [autoPlay, setAutoPlay] = useState(false);
+  const [voiceOn, setVoiceOn] = useState(false);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
   const containerRef = useRef<HTMLDivElement>(null);
   const isZoomedRef = useRef(false);
   const autoPlayTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const pageChangeLockRef = useRef(false);
 
   const totalPages = book.pages.length;
 
@@ -39,6 +43,13 @@ export default function BookViewer({
     setPageIndex(0);
     isZoomedRef.current = false;
     setAutoPlay(false);
+    setVoiceOn(true);
+
+    // Cleanup audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
 
     switch (slideDirection) {
       case 'from-bottom':
@@ -58,7 +69,8 @@ export default function BookViewer({
       autoPlayTimerRef.current = null;
     }
 
-    if (autoPlay) {
+    // Voice on: page turns driven by audio ended event, no timer needed
+    if (autoPlay && !voiceOn) {
       autoPlayTimerRef.current = setInterval(() => {
         setPageIndex(prev => {
           if (prev >= totalPages - 1) {
@@ -67,7 +79,7 @@ export default function BookViewer({
           }
           return prev + 1;
         });
-      }, 4000);
+      }, 5000);
     }
 
     return () => {
@@ -75,7 +87,64 @@ export default function BookViewer({
         clearInterval(autoPlayTimerRef.current);
       }
     };
-  }, [autoPlay, totalPages]);
+  }, [autoPlay, totalPages, voiceOn]);
+
+  // Keep autoPlay in a ref so audio ended handler always sees latest value
+  const autoPlayRef = useRef(autoPlay);
+  autoPlayRef.current = autoPlay;
+
+  // Play audio when page changes (if voice is on)
+  useEffect(() => {
+    if (!voiceOn) return;
+
+    const texts = language === 'zh' ? book.pageTexts : book.pageTextsEn;
+    if (!texts || !texts[pageIndex]) return;
+
+    const lang = language === 'zh' ? 'zh' : 'en';
+    const audioPath = `./audio/${book.id}/page-${String(pageIndex).padStart(2, '0')}-${lang}.mp3`;
+
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+
+    const audio = new Audio(audioPath);
+    audioRef.current = audio;
+    audio.play().catch(() => {
+      // Auto-play may be blocked, silently fail
+    });
+
+    // When audio ends, if autoPlay is on, advance to next page
+    const goNext = () => {
+      if (autoPlayRef.current && pageIndex < totalPages - 1 && !pageChangeLockRef.current) {
+        pageChangeLockRef.current = true;
+        setPageIndex(prev => {
+          if (prev >= totalPages - 1) {
+            setAutoPlay(false);
+            return prev;
+          }
+          return prev + 1;
+        });
+        setTimeout(() => { pageChangeLockRef.current = false; }, 500);
+      }
+    };
+
+    audio.addEventListener('ended', goNext);
+
+    // Fallback: if audio fails to load, still advance after 5s when autoPlay+voiceOn
+    audio.addEventListener('error', () => {
+      if (voiceOn && autoPlayRef.current) {
+        setTimeout(goNext, 5000);
+      }
+    });
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, [pageIndex, voiceOn, language, book.id, book.pageTexts, book.pageTextsEn, totalPages]);
 
   const goToPrevPage = useCallback(() => {
     if (isZoomedRef.current || pageIndex <= 0) return;
@@ -88,7 +157,7 @@ export default function BookViewer({
   }, [pageIndex, totalPages]);
 
   const goToNextBook = useCallback(() => {
-    setAutoPlay(false);
+    setAutoPlay(true);
     const newIndex = bookIndex === totalBooks - 1 ? 0 : bookIndex + 1;
     onGoToBook(newIndex, 'from-bottom');
   }, [bookIndex, totalBooks, onGoToBook]);
@@ -99,13 +168,39 @@ export default function BookViewer({
   }, []);
 
   const goToPrevBook = useCallback(() => {
-    setAutoPlay(false);
+    setAutoPlay(true);
     const newIndex = bookIndex === 0 ? totalBooks - 1 : bookIndex - 1;
     onGoToBook(newIndex, 'from-top');
   }, [bookIndex, totalBooks, onGoToBook]);
 
   const toggleAutoPlay = useCallback(() => {
-    setAutoPlay(prev => !prev);
+    setAutoPlay(prev => {
+      const next = !prev;
+      // When turning autoPlay back on, if audio has ended, replay from start
+      if (next && voiceOn && audioRef.current && audioRef.current.ended) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+      }
+      return next;
+    });
+  }, [voiceOn]);
+
+  const toggleVoice = useCallback(() => {
+    setVoiceOn(prev => {
+      const next = !prev;
+      if (!next && audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleLanguage = useCallback(() => {
+    setLanguage(prev => {
+      const next = prev === 'zh' ? 'en' : 'zh';
+      return next;
+    });
   }, []);
 
   const swipeHandlers = useSwipe({
@@ -144,6 +239,10 @@ export default function BookViewer({
   const btnBase = 'flex items-center justify-center rounded-xl transition-all duration-200';
   const btnBg = { background: 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' };
 
+  // Display current language label
+  const langLabel = language === 'zh' ? '中' : 'EN';
+  const hasPageTexts = book.pageTexts && book.pageTexts.length > 0 && book.pageTexts.some(t => t.length > 0);
+
   return (
     <div
       ref={containerRef}
@@ -160,11 +259,128 @@ export default function BookViewer({
       }}
       style={{ touchAction: 'none', userSelect: 'none' }}
     >
-      {/* Top-right: Home button (moved from top-left) */}
-      <div className="absolute top-0 right-0 z-40">
+
+
+      {/* Right side controls */}
+      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
+        {/* 1. Auto play button */}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleAutoPlay(); }}
+          className={`w-11 h-11 md:w-12 md:h-12 ${btnBase} cursor-pointer
+                     ${autoPlay
+                       ? 'bg-warm-orange/70 hover:bg-warm-orange/80 active:bg-warm-orange/90'
+                       : 'hover:opacity-100 active:opacity-80'
+                     }`}
+          style={{ background: autoPlay ? undefined : 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+        >
+          {autoPlay ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="6" y="4" width="4" height="16" />
+              <rect x="14" y="4" width="4" height="16" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+          )}
+        </button>
+
+        <div className="h-3" />
+
+        {/* 2. Right arrow (next page) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
+          className={`w-11 h-14 md:w-12 md:h-20 ${btnBase}
+                     ${isLastPage
+                       ? 'opacity-30 cursor-not-allowed'
+                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
+                     }`}
+          style={btnBg}
+          disabled={isLastPage}
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+
+        <div className="h-3" />
+
+        {/* 3. Voice on/off button */}
+        {hasPageTexts && (
+          <button
+            onClick={(e) => { e.stopPropagation(); toggleVoice(); }}
+            className={`w-11 h-11 md:w-12 md:h-12 ${btnBase} cursor-pointer
+                       ${voiceOn
+                         ? 'bg-warm-orange/70 hover:bg-warm-orange/80 active:bg-warm-orange/90'
+                         : 'hover:opacity-100 active:opacity-80'
+                       }`}
+            style={{ background: voiceOn ? undefined : 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
+          >
+            {voiceOn ? (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+            )}
+          </button>
+        )}
+
+        <div className="h-3" />
+
+        {/* 4. Language toggle: zh/EN */}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}
+          className={`w-11 h-11 md:w-12 md:h-12 ${btnBase} cursor-pointer
+                     ${language === 'en'
+                       ? 'bg-warm-orange/70 hover:bg-warm-orange/80 active:bg-warm-orange/90'
+                       : 'hover:opacity-100 active:opacity-80'
+                     } font-bold text-white`}
+          style={{ background: language === 'en' ? undefined : 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)', fontSize: '15px' }}
+        >
+          {langLabel}
+        </button>
+
+        <div className="h-3" />
+
+        {/* 5. Prev book (up arrow) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
+          className={`w-11 h-11 md:w-12 md:h-12 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
+          style={btnBg}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 19V5" />
+            <path d="M5 12l7-7 7 7" />
+          </svg>
+        </button>
+
+        <div className="h-3" />
+
+        {/* 6. Next book (down arrow) */}
+        <button
+          onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
+          className={`w-11 h-11 md:w-12 md:h-12 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
+          style={btnBg}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 5v14" />
+            <path d="M19 12l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Left side: Home button at top-left */}
+      <div className="absolute top-0 left-0 z-40">
         <button
           onClick={(e) => { e.stopPropagation(); onBackToGrid(); }}
-          className="mt-10 mr-4 flex items-center gap-2 px-3 py-2 rounded-lg
+          className="mt-10 ml-4 flex items-center gap-2 px-3 py-2 rounded-lg
                      bg-black/20 hover:bg-black/40 active:bg-black/50
                      backdrop-blur-sm transition-all duration-200 cursor-pointer"
         >
@@ -173,83 +389,6 @@ export default function BookViewer({
             <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
           <span className="text-white/80 font-body text-sm">主页</span>
-        </button>
-      </div>
-
-      {/* Right side controls - shifted right with right-3 */}
-      <div className="fixed right-3 top-1/2 -translate-y-1/2 z-40 flex flex-col items-center">
-        {/* Auto play button */}
-        <button
-          onClick={(e) => { e.stopPropagation(); toggleAutoPlay(); }}
-          className={`w-12 h-12 md:w-14 md:h-12 ${btnBase} cursor-pointer
-                     ${autoPlay
-                       ? 'bg-warm-orange/70 hover:bg-warm-orange/80 active:bg-warm-orange/90'
-                       : 'hover:opacity-100 active:opacity-80'
-                     }`}
-          style={{ background: autoPlay ? undefined : 'rgba(0,0,0,0.15)', backdropFilter: 'blur(4px)' }}
-        >
-          {autoPlay ? (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="6" y="4" width="4" height="16" />
-              <rect x="14" y="4" width="4" height="16" />
-            </svg>
-          ) : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="5 3 19 12 5 21 5 3" />
-            </svg>
-          )}
-        </button>
-
-        <div className="h-3" />
-
-        {/* Right arrow (next page) */}
-        <button
-          onClick={(e) => { e.stopPropagation(); goToNextPage(); }}
-          className={`w-12 h-16 md:w-14 md:h-24 ${btnBase}
-                     ${isLastPage
-                       ? 'opacity-30 cursor-not-allowed'
-                       : 'opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer'
-                     }`}
-          style={btnBg}
-          disabled={isLastPage}
-        >
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
-        </button>
-
-        <div className="h-8" />
-
-        {/* Prev book - on top (up arrow) */}
-        <button
-          onClick={(e) => { e.stopPropagation(); goToPrevBook(); }}
-          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
-          style={btnBg}
-        >
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-white/80 text-[10px] font-body whitespace-nowrap">上一本</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
-              <path d="M12 19V5" />
-              <path d="M5 12l7-7 7 7" />
-            </svg>
-          </div>
-        </button>
-
-        <div className="h-8" />
-
-        {/* Next book - on bottom (down arrow) */}
-        <button
-          onClick={(e) => { e.stopPropagation(); goToNextBook(); }}
-          className={`w-12 h-14 md:w-16 md:h-14 ${btnBase} opacity-100 hover:opacity-100 active:opacity-80 cursor-pointer`}
-          style={btnBg}
-        >
-          <div className="flex flex-col items-center leading-none">
-            <span className="text-white/80 text-[10px] font-body whitespace-nowrap">下一本</span>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5">
-              <path d="M12 5v14" />
-              <path d="M19 12l-7 7-7-7" />
-            </svg>
-          </div>
         </button>
       </div>
 
@@ -305,6 +444,8 @@ export default function BookViewer({
           />
         </PinchZoom>
       </div>
+
+
 
       {/* Bottom bar */}
       <div className="absolute bottom-0 left-0 right-0 z-30">

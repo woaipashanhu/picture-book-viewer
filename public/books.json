@@ -10,6 +10,18 @@
       "./books/01-星空探险/page-01.jpg",
       "./books/01-星空探险/page-02.jpg",
       "./books/01-星空探险/page-03.jpg"
+    ],
+    "pageTexts": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "pageTextsEn": [
+      "",
+      "",
+      "",
+      ""
     ]
   },
   {
@@ -22,6 +34,16 @@
       "./books/02-海底世界/cover.jpg",
       "./books/02-海底世界/page-01.jpg",
       "./books/02-海底世界/page-02.jpg"
+    ],
+    "pageTexts": [
+      "",
+      "",
+      ""
+    ],
+    "pageTextsEn": [
+      "",
+      "",
+      ""
     ]
   },
   {
@@ -34,6 +56,16 @@
       "./books/03-小花园的秘密/cover.jpg",
       "./books/03-小花园的秘密/page-01.jpg",
       "./books/03-小花园的秘密/page-02.jpg"
+    ],
+    "pageTexts": [
+      "",
+      "",
+      ""
+    ],
+    "pageTextsEn": [
+      "",
+      "",
+      ""
     ]
   },
   {
@@ -60,6 +92,44 @@
       "./books/04-灰大门到橘子洲/page-15.jpg",
       "./books/04-灰大门到橘子洲/page-16.jpg",
       "./books/04-灰大门到橘子洲/page-17.jpg"
+    ],
+    "pageTexts": [
+      "从灰大门到橘子洲 一次旅行的故事",
+      "第1章 灰大门和红大门 我家的巷子不太宽，有点窄窄的。巷子的那头，有一个灰灰的大大门，是我家的大门。我家对面还有一个红红的大门，也是一户人家的大门。",
+      "第2章 穿过长长的胡同 过了灰大门和红大门，我们要走很长很长的胡同。胡同里有很多很多人家，他们的大门也都挨着挨着，紧紧地排着队。",
+      "第3章 冯明亮伯伯的车 我们走到胡同外面的大街上，冯明亮伯伯的车已经停在那里了。冯明亮伯伯是我们的朋友，他开着车送我们去高铁站。",
+      "第4章 高铁站和高铁 到了高铁站，我第一次看到了那么大的火车，白色的，长长的，像一条大虫子。我从来没有坐过高铁，心里特别特别激动。",
+      "第5章 北京南站·地铁·酒店 我们坐了很久的高铁，到了北京南站。然后我们坐地铁，找到了我们的酒店——希尔顿欢朋。",
+      "第6章 颐和园 第二天，我们去了颐和园。那里有很大的湖，有很长的走廊，还有很漂亮很漂亮的大房子。可是天太热了，我热得满头大汗，很不舒服。",
+      "第7章 姑姑工作的地方写字 后来我们去了姑姑工作的地方。姑姑在一个很漂亮的写字楼里上班。她在办公室里给我准备了纸和笔，让我在旁边安安静静地写字。",
+      "第8章 天安门广场 那天我们还去了天安门广场。天气还是那么热那么热，我热得越来越不耐烦了，一点都不想再走了。",
+      "第9章 我哭了·吃冰淇淋 终于，我忍不住了，哇的一声就哭了出来。爸爸赶紧给我买了一个冰淇淋，我吃了一口，就开心了。",
+      "第10章 去长沙 过了几天，我们要去长沙了。我们又坐地铁，又坐高铁，到了长沙以后，住进了维也纳酒店。",
+      "第11章 橘子洲头·爷爷买扇子 在长沙，我们去了橘子洲头。那里风景很美，有湘江，还有好多好多的橘子树。天气还是很热，爷爷心疼我，给我买了一把漂亮的扇子，红色的，上面画着很好看的图案。",
+      "第12章 剪扇子（一） 我拿着爷爷给我买的红色扇子，不知道为什么，就想把它剪一剪。我拿起剪刀，咔嚓一下，就把扇子剪开了。",
+      "第13章 剪扇子（二） 然后我又找到了爸爸的蓝色扇子，上面有叮当猫的图案，我又拿起剪刀把它剪了。爸爸看着我，摇了摇头。",
+      "第14章 剪扇子（三） 接着，我又找到了妈妈的粉色扇子，一把漂亮的小扇子。我又拿起剪刀把它剪了。妈妈看着我，一句话也说不出来。",
+      "第15章 剪扇子（四） 最后，我又想剪奶奶的扇子。可是奶奶的扇子太硬了，我剪不动。爸爸看不下去了，蹲下来帮我把奶奶的扇子也剪了。",
+      "就这样，所有的扇子都被我剪坏了。红色的、蓝色的、粉色的，还有奶奶的……哎，我以后再也不乱剪东西了！"
+    ],
+    "pageTextsEn": [
+      "From Gray Gate to Orange Isle — A Story of a Trip",
+      "Chapter 1: Gray Gate and Red Gate. Our alley is not very wide, a bit narrow. At the end of the alley, there is a big gray gate, that's our front gate. Across from our house, there's also a big red gate, it's someone else's front gate too.",
+      "Chapter 2: Walking Through the Long Alley. Past the gray gate and the red gate, we had to walk a very very long alley. There were many many houses in the alley, and their gates were all lined up next to each other.",
+      "Chapter 3: Uncle Feng Mingliang's Car. We walked to the street outside the alley, and Uncle Feng Mingliang's car was already parked there. Uncle Feng Mingliang is our friend. He drove us to the high-speed train station.",
+      "Chapter 4: The High-Speed Train Station and the Train. When we got to the station, I saw the biggest train I'd ever seen for the first time. It was white and long, like a giant caterpillar. I'd never ridden a high-speed train before. I was super super excited.",
+      "Chapter 5: Beijing South Station, Subway, Hotel. We rode the high-speed train for a long time and arrived at Beijing South Station. Then we took the subway and found our hotel — the Hampton by Hilton.",
+      "Chapter 6: The Summer Palace. The next day, we went to the Summer Palace. There was a huge lake, a very long corridor, and some very very beautiful big buildings. But it was so hot. I was sweating all over and felt very uncomfortable.",
+      "Chapter 7: Writing at Auntie's Workplace. Later we went to where Auntie works. Auntie works in a very pretty office building. She prepared paper and a pen for me in her office, so I could quietly practice writing.",
+      "Chapter 8: Tiananmen Square. That day we also went to Tiananmen Square. The weather was still so so hot. I was getting more and more impatient and really didn't want to walk anymore.",
+      "Chapter 9: I Cried and Ate Ice Cream. Finally, I couldn't hold it anymore and burst into tears — waaah! Dad quickly bought me an ice cream. I took one bite and felt happy again.",
+      "Chapter 10: Off to Changsha. After a few days, it was time to go to Changsha. We took the subway again, then the high-speed train. After arriving in Changsha, we checked into the Vienna Hotel.",
+      "Chapter 11: Orange Isle — Grandpa Bought a Fan. In Changsha, we went to Orange Isle. The scenery there was beautiful, with the Xiangjiang River and lots and lots of orange trees. It was still very hot. Grandpa felt sorry for me and bought me a pretty fan — a red one with beautiful patterns on it.",
+      "Chapter 12: Cutting the Fan, Part One. I held the red fan Grandpa bought me, and for some reason, I wanted to cut it. I picked up the scissors and — snip — I cut the fan open.",
+      "Chapter 13: Cutting the Fan, Part Two. Then I found Dad's blue fan — it had a Doraemon pattern on it. I picked up the scissors and cut that one too. Dad looked at me and shook his head.",
+      "Chapter 14: Cutting the Fan, Part Three. Then I found Mom's pink fan — a pretty little fan. I picked up the scissors and cut that one too. Mom looked at me and couldn't say a word.",
+      "Chapter 15: Cutting the Fan, Part Four. Finally, I wanted to cut Grandma's fan too. But Grandma's fan was too hard. I couldn't cut it. Dad couldn't stand watching anymore. He crouched down and helped me cut Grandma's fan too.",
+      "And just like that, all the fans were ruined by me. The red one, the blue one, the pink one, and Grandma's too... Sigh, I'll never cut things randomly again!"
     ]
   },
   {
@@ -78,6 +148,28 @@
       "./books/05-福州亲子出行记/page-07.png",
       "./books/05-福州亲子出行记/page-08.png",
       "./books/05-福州亲子出行记/page-09.png"
+    ],
+    "pageTexts": [
+      "福州亲子出行记",
+      "有一天有一天有一天。",
+      "去福州，我去了烟台山公园。专车太绕了，下了车肚子疼。",
+      "爸爸问我怎么了，我说肚子疼。爸爸说，你要不要去体验一下烟台山的公共卫生间？走，我带你去！",
+      "到了公共卫生间，没拉出来。爸爸说，你可能是晕车。是吗？",
+      "出来散散步，透透气就好了。走了走路，爸爸问我，现在好多了吗？",
+      "宝贝不坐专车啦！",
+      "坐地铁吧！到了达道地铁站，再到三叉街，吃了东方红，吃了太二。",
+      "吃了太二酸菜鱼，回酒店睡觉了。明天回广州啦！"
+    ],
+    "pageTextsEn": [
+      "Fuzhou Family Trip",
+      "One day, one day, one day.",
+      "We went to Fuzhou. I went to Yantai Mountain Park. The private car took too many detours. After getting off, my stomach hurt.",
+      "Dad asked me what was wrong. I said my stomach hurt. Dad said, do you want to try the public restroom at Yantai Mountain? Come on, I'll take you!",
+      "We got to the public restroom, but nothing came out. Dad said, you might be carsick. Really?",
+      "Let's go for a walk, get some fresh air. After walking a bit, Dad asked, are you feeling better now?",
+      "No more private car for the baby!",
+      "Let's take the subway! We went to Dadao subway station, then to Sanchajie. We ate at Dongfanghong, and also ate at Tai Er.",
+      "After eating Tai Er's fish, we went back to the hotel to sleep. Tomorrow we're going back to Guangzhou!"
     ]
   },
   {
@@ -96,6 +188,28 @@
       "./books/06-三坊七巷体验汇报/page-06.jpg",
       "./books/06-三坊七巷体验汇报/page-07.jpg",
       "./books/06-三坊七巷体验汇报/page-08.jpg"
+    ],
+    "pageTexts": [
+      "三坊七巷体验汇报",
+      "三坊七巷体验汇报",
+      "到了三坊七巷，肚子疼了",
+      "体验了三坊七巷的公共卫生间",
+      "从西湖公园东门到西门，坐船飘荡",
+      "坐地铁去三叉街",
+      "在商场里吃晚饭",
+      "回到酒店，困了",
+      "今天玩得很开心！"
+    ],
+    "pageTextsEn": [
+      "Three Lanes and Seven Alleys Experience Report",
+      "Three Lanes and Seven Alleys Experience Report",
+      "We arrived at Three Lanes and Seven Alleys. My stomach hurt.",
+      "We tried the public restroom at Three Lanes and Seven Alleys.",
+      "From the East Gate to the West Gate of West Lake Park, floating on a boat.",
+      "Taking the subway to Sanchajie.",
+      "Eating dinner in the mall.",
+      "Back at the hotel, feeling sleepy.",
+      "Today was a lot of fun!"
     ]
   },
   {
@@ -112,6 +226,24 @@
       "./books/09-爸爸被蜜蜂蛰了/page-04.jpg",
       "./books/09-爸爸被蜜蜂蛰了/page-05.jpg",
       "./books/09-爸爸被蜜蜂蛰了/page-06.jpg"
+    ],
+    "pageTexts": [
+      "啊，爸爸被蜜蜂蛰了",
+      "有一天在山东老家时，爸爸在院子里的石榴树旁边。",
+      "一不小心被蜜蜂蛰到了，因为爸爸一不小心踩到他了。",
+      "好疼啊，好疼啊，好疼啊，好疼啊。赶紧用水洗一洗。",
+      "然后用水洗过之后，稍微好一些了，但还是有点肿。",
+      "然后又过了好几天，过了好几天，脚趾头上的这个肿才慢慢下去。才慢慢下去。",
+      "最后这个脚趾头彻底变好了。"
+    ],
+    "pageTextsEn": [
+      "Oh no, Dad got stung by a bee!",
+      "One day in Shandong, Dad was next to the pomegranate tree in the yard.",
+      "He accidentally got stung by a bee, because Dad accidentally stepped on it.",
+      "Ouch, ouch, ouch, ouch, ouch! Quick, wash it with water.",
+      "After washing it with water, it felt a bit better, but it was still a bit swollen.",
+      "Then after many days, many days, the swelling on the toe slowly went down. Slowly went down.",
+      "Finally, the toe completely healed."
     ]
   },
   {
@@ -128,6 +260,24 @@
       "./books/11-广州到重庆/page-04.jpg",
       "./books/11-广州到重庆/page-05.jpg",
       "./books/11-广州到重庆/page-06.jpg"
+    ],
+    "pageTexts": [
+      "广州到重庆",
+      "有一天，我们去重庆。6号线在如意坊转11号线。11号线在芳村转22号线。22号线坐个地铁到广州南站。",
+      "坐个高铁到重庆西站。",
+      "体验了重庆高铁站的公共卫生间。体验完了，我们坐个地铁5号线，在大龙山转6号线。",
+      "6号线到红旗河沟，到了红旗河沟。",
+      "我们晚上吃了个饭，吃完饭我们又去了红土地地铁站。",
+      "去完红土地，我们就回酒店睡觉了。回到酒店，睡觉了。"
+    ],
+    "pageTextsEn": [
+      "From Guangzhou to Chongqing",
+      "One day, we went to Chongqing. Take Line 6, transfer to Line 11 at Ruyifang. Take Line 11, transfer to Line 22 at Fangcun. Take Line 22 to Guangzhou South Station.",
+      "Take the high-speed train to Chongqing West Station.",
+      "We tried the public restroom at Chongqing West Station. After that, we took Line 5 of the subway, transferred to Line 6 at Dalongshan.",
+      "Take Line 6 to Hongqihegou, arrived at Hongqihegou.",
+      "We had dinner that evening. After dinner, we went to the Hongtudi subway station.",
+      "After Hongtudi, we went back to the hotel to sleep. Back at the hotel, time to sleep."
     ]
   },
   {
@@ -144,6 +294,24 @@
       "./books/12-重庆的一天/page-04.jpg",
       "./books/12-重庆的一天/page-05.jpg",
       "./books/12-重庆的一天/page-06.jpg"
+    ],
+    "pageTexts": [
+      "重庆的一天",
+      "明天哦，下雨了，没出去玩。",
+      "雨停了，在红土地6号线，在红土地转10号线。",
+      "我坐个10号线，到大礼堂，体验了一下大礼堂的公共卫生间。",
+      "体验完了大礼堂的公共卫生间。又去了皇冠大扶梯。",
+      "去了皇冠大扶梯，然后又去了朝天门。",
+      "晚上在朝天门吃了个饭。吃完饭，我们就又回酒店睡觉了。"
+    ],
+    "pageTextsEn": [
+      "A Day in Chongqing",
+      "The next day, oh, it rained. We didn't go out to play.",
+      "The rain stopped. At Hongtudi, take Line 6, transfer to Line 10 at Hongtudi.",
+      "I took Line 10 to the Great Hall of the People. I tried the public restroom at the Great Hall of the People.",
+      "After trying the restroom at the Great Hall of the People, we went to the Crown Escalator.",
+      "We went to the Crown Escalator, then went to Chaotianmen.",
+      "We had dinner at Chaotianmen that evening. After eating, we went back to the hotel to sleep."
     ]
   },
   {
@@ -161,6 +329,26 @@
       "./books/13-从重庆到成都/page-05.jpg",
       "./books/13-从重庆到成都/page-06.jpg",
       "./books/13-从重庆到成都/page-07.jpg"
+    ],
+    "pageTexts": [
+      "从重庆到成都",
+      "第二天，从长生桥。在去成都。在刘家坪换乘重庆东站方向。坐个地铁到重庆东站。",
+      "我们再坐个高铁到成都东站。",
+      "到了成都东站，去了通惠门。中午在通惠门吃了个饭。",
+      "吃完饭，我们又去了武侯祠。",
+      "体验了一下武侯祠的公共卫生间。",
+      "体验完了，晚上在红牌楼吃了个饭。",
+      "吃完饭，我们坐个地铁到成都东站，我们再坐个高铁到沙坪坝站。坐个地铁到长生桥。回到酒店睡觉了。明天回广州了。"
+    ],
+    "pageTextsEn": [
+      "From Chongqing to Chengdu",
+      "The next day, from Changshengqiao. Headed to Chengdu. Transfer at Liujiaping towards Chongqing East Station. Take the subway to Chongqing East Station.",
+      "Then take the high-speed train to Chengdu East Station.",
+      "Arrived at Chengdu East Station. Went to Tonghuimen. Had lunch at Tonghuimen.",
+      "After lunch, we went to Wuhou Shrine.",
+      "Tried the public restroom at Wuhou Shrine.",
+      "After that, had dinner at Hongpailou that evening.",
+      "After dinner, we took the subway to Chengdu East Station, then took the high-speed train to Shapingba Station. Then the subway to Changshengqiao. Back at the hotel to sleep. Tomorrow we go back to Guangzhou."
     ]
   },
   {
@@ -174,6 +362,18 @@
       "./books/14-从重庆回广州/page-01.jpg",
       "./books/14-从重庆回广州/page-02.jpg",
       "./books/14-从重庆回广州/page-03.jpg"
+    ],
+    "pageTexts": [
+      "从重庆回广州",
+      "明天回广州了。六号线在上清寺换乘环线。",
+      "换乘环线，坐个地铁到重庆西站。",
+      "到了重庆西站，我们再坐个高铁到广州南站。"
+    ],
+    "pageTextsEn": [
+      "From Chongqing Back to Guangzhou",
+      "Tomorrow, back to Guangzhou. Line 6, transfer to the Loop Line at Shangqingsi.",
+      "Transfer to the Loop Line, take the subway to Chongqing West Station.",
+      "Arrived at Chongqing West Station, then take the high-speed train to Guangzhou South Station."
     ]
   }
 ]
