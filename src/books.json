@@ -32,5 +32,46 @@
       "./books/03-小花园的秘密/page-01.jpg",
       "./books/03-小花园的秘密/page-02.jpg"
     ]
+  },
+  {
+    "id": "18-青蛙蛤蟆功",
+    "title": "青蛙蛤蟆功",
+    "description": "在山东老家的晚上，爸爸说要练青蛙蛤蟆功，不高兴哭了，后来开心地笑了。",
+    "date": "2026-06-07",
+    "cover": "./books/18-青蛙蛤蟆功/cover.jpg",
+    "pages": [
+      "./books/18-青蛙蛤蟆功/page-01.jpg",
+      "./books/18-青蛙蛤蟆功/page-02.jpg",
+      "./books/18-青蛙蛤蟆功/page-03.jpg",
+      "./books/18-青蛙蛤蟆功/page-04.jpg"
+    ]
+  },
+  {
+    "id": "19-小狗和排骨",
+    "title": "小狗和排骨",
+    "description": "爷爷炖了香喷喷的排骨，小狗闻香跑来又跑了，以为没法玩了哭了，小狗又回来了开心地笑了。",
+    "date": "2026-06-07",
+    "cover": "./books/19-小狗和排骨/cover.jpg",
+    "pages": [
+      "./books/19-小狗和排骨/page-01.jpg",
+      "./books/19-小狗和排骨/page-02.jpg",
+      "./books/19-小狗和排骨/page-03.jpg",
+      "./books/19-小狗和排骨/page-04.jpg"
+    ]
+  },
+  {
+    "id": "20-画画毛笔字游乐场",
+    "title": "画画毛笔字游乐场",
+    "description": "画歪歪的卫生间，写毛笔字弄满胳膊墨水，去刘勇家找游乐场被三只狗吓得碰头哭了又笑了。",
+    "date": "2026-06-07",
+    "cover": "./books/20-画画毛笔字游乐场/cover.jpg",
+    "pages": [
+      "./books/20-画画毛笔字游乐场/page-01.jpg",
+      "./books/20-画画毛笔字游乐场/page-02.jpg",
+      "./books/20-画画毛笔字游乐场/page-03.jpg",
+      "./books/20-画画毛笔字游乐场/page-04.jpg",
+      "./books/20-画画毛笔字游乐场/page-05.jpg",
+      "./books/20-画画毛笔字游乐场/page-06.jpg"
+    ]
   }
 ]
