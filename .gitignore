@@ -1,2 +1,9 @@
 node_modules/
+dist/
 .DS_Store
+*.log
+
+# 备份文件
+*.bak
+*.bak2
+*.bak3

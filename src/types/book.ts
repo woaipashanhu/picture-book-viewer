@@ -5,4 +5,8 @@ export interface Book {
   date: string;
   cover: string;
   pages: string[];
+  pageTexts?: string[];
+  pageTextsEn?: string[];
+  pagesEn?: string[];
+  bookIdEn?: string;
 }

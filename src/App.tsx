@@ -11,10 +11,12 @@ export default function App() {
   const { books, loading } = useBooks();
   const [viewState, setViewState] = useState<ViewState>({ screen: 'grid' });
   const [checking, setChecking] = useState(false);
+  const [lastBookIndex, setLastBookIndex] = useState<number | null>(null);
 
   const totalBooks = books.length;
 
   const openBook = useCallback((index: number) => {
+    setLastBookIndex(index);
     setViewState({ screen: 'viewer', bookIndex: index, slideDirection: 'none' });
   }, []);
 
@@ -100,7 +102,7 @@ export default function App() {
             )}
             <span className="text-white text-[10px] font-bold leading-none">{checking ? '中' : '刷新'}</span>
           </button>
-          <BookGrid books={books} onSelect={openBook} />
+          <BookGrid books={books} onSelect={openBook} scrollToIndex={lastBookIndex} />
         </>
       ) : (
         <BookViewer
@@ -108,6 +110,7 @@ export default function App() {
           bookIndex={viewState.bookIndex}
           totalBooks={totalBooks}
           slideDirection={viewState.slideDirection}
+          initialPage={0}
           onCloseUp={() => closeToGrid('up')}
           onCloseDown={() => closeToGrid('down')}
           onBackToGrid={backToGrid}
